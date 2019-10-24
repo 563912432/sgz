@@ -253,7 +253,7 @@ export default {
   methods: {
     init () {
       // 取科目
-      this.restaurants = this.$store.state.keMuInfo || JSON.parse(sessionStorage.getItem('sgz_ke_mu_subject'))
+      this.restaurants = this.$store.state.keMuInfo || JSON.parse(sessionStorage.getItem('sgz_info'))['keMuInfo']
       // 取答案
       this.initAnswer()
     },

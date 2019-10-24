@@ -112,7 +112,7 @@ export default {
         // 数量金额式明细账
         this.subjectData = this.$store.state.basicKeMuShuLiangMingXi
       }
-      const companySubject = this.$store.state.companySubject || JSON.parse(sessionStorage.getItem('sgz_company_subject'))
+      const companySubject = this.$store.state.companySubject || JSON.parse(sessionStorage.getItem('sgz_info'))['companySubject']
       this.subjectData.forEach(v => {
         let data = this.getTree(companySubject, v.id)
         if (data.length > 0) {

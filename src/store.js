@@ -1,9 +1,17 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
 
+import VuexPersistence from 'vuex-persist'
+
 Vue.use(Vuex)
+// 前端持久化存储
+const vuexLocal = new VuexPersistence({
+  key: 'sgz_info',
+  storage: window.sessionStorage
+})
 
 export default new Vuex.Store({
+  plugins: [vuexLocal.plugin],
   state: {
     // 登录用户角色
     role: '',

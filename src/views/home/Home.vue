@@ -209,8 +209,8 @@ export default {
             })
             this.$store.commit('SAVE_COMPANY_SUBJECT', subject)
             this.$store.commit('SAVE_KE_MU_INFO', this.deepTraversal(this.subjectData))
-            sessionStorage.setItem('sgz_company_subject', JSON.stringify(subject))
-            sessionStorage.setItem('sgz_ke_mu_subject', JSON.stringify(this.deepTraversal(this.subjectData)))
+            // sessionStorage.setItem('sgz_company_subject', JSON.stringify(subject))
+            // sessionStorage.setItem('sgz_ke_mu_subject', JSON.stringify(this.deepTraversal(this.subjectData)))
             // 角色 老师
             if (this.role === 'teacher') {
               this.$store.commit('SAVE_ROLE', 'teacher')
