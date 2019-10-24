@@ -1,0 +1,59 @@
+/* 改变主题色变量 */
+$--color-primary: #93C343;
+
+$--font-path: '~element-ui/lib/theme-chalk/fonts';
+@import "~element-ui/packages/theme-chalk/src/index";
+
+// sidebar
+$menuText:#ffffff;
+$menuActiveText:#FFFFFF;
+$subMenuActiveText:#FFFFFF; // https://github.com/ElemeFE/element/issues/12951
+
+$menuBg:#3A81D6;
+$menuHover:#478DDA;
+
+$subMenuBg:#3A81D6;
+$subMenuHover:#478DDA;
+
+// dialog 复写样式
+.el-dialog__header{
+  background-color: #EFEFEF;
+  padding: 7px;
+}
+.el-dialog__header .el-dialog__title{
+  color: #333333;
+  font-size: 14px;
+}
+.el-dialog__header .el-dialog__headerbtn{
+  top: 10px;
+}
+.el-dialog__headerbtn .el-dialog__close:hover{
+  color: #7CCB40;
+}
+.el-dialog__body{
+  padding: 20px;
+}
+.el-form-item{
+  margin-bottom: 15px;
+}
+// menu hover
+.submenu-title-noDropdown,
+.el-submenu__title {
+  &:hover {
+    background-color: #ECF5FF !important;
+    color: #303133;
+  }
+}
+.el-menu-item:hover,
+.el-menu-item:active{
+  background-color: #ECF5FF;
+  color: #303133;
+}
+.el-menu-item.is-active {
+  color: $menuHover;
+  background-color: #ECF5FF;
+}
+.el-submenu.is-active .el-submenu__title {
+  border-bottom-color: transparent;
+}
+
