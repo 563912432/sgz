@@ -26,7 +26,7 @@ export default new Router({
       component: () => import('@/views/admin/index')
     },
     {
-      path: '/parse',
+      path: '/parse/:trade_id',
       name: 'Parse',
       component: () => import('@/views/parse/index')
     },

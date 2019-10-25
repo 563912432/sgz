@@ -22,8 +22,8 @@ window.axios = axios
 axios.defaults.baseURL = 'http://117.50.43.204:8000/manual/v1'
 // 请求拦截器
 axios.interceptors.request.use(config => {
-  document.cookie = 'Admin-Access-Token=2c6da4a5d045792201336fe8b4e63d49'
-  // document.cookie = 'Student-Access-Token=43c0b587cabfd18d5ec00f6dd80753c0'
+  // document.cookie = 'Admin-Access-Token=2c6da4a5d045792201336fe8b4e63d49'
+  document.cookie = 'Student-Access-Token=7e1342176ad4bbb3f6334b87d5c3ea03'
   function getCookie (cname) {
     var name = cname + '='
     var ca = document.cookie.split(';')
