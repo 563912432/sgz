@@ -27,7 +27,7 @@
                 <el-menu
                   class="el-menu-vertical-demo left-list-list"
                   unique-opened
-                  :default-active="'3-' + (index + 1)"
+                  :default-active="defaultMenu"
                   :collapse="isCollapse">
                   <el-submenu index="3">
                     <template slot="title">
@@ -51,10 +51,9 @@
                       <i class="el-icon-notebook-2"></i>
                       <span slot="title">明细分类账</span>
                     </template>
-                    <el-menu-item index="5-1">三栏式明细账-1</el-menu-item>
-                    <el-menu-item index="5-2">三栏式明细账-2</el-menu-item>
-                    <el-menu-item index="5-3">应交增值税明细账</el-menu-item>
-                    <el-menu-item index="5-4">数量金额式明细账</el-menu-item>
+                    <el-menu-item index="5-1">三栏式明细账</el-menu-item>
+                    <el-menu-item index="5-2">应交增值税明细账</el-menu-item>
+                    <el-menu-item index="5-3">数量金额式明细账</el-menu-item>
                   </el-submenu>
                   <el-menu-item index="6">
                     <i class="el-icon-notebook-1"></i>
@@ -128,6 +127,7 @@ export default {
       isCollapse: false,
       asideWidth: '240px',
       companyInfo: {},
+      defaultMenu: '3-1',
       index: 0,
       system: '',
       handleData: [],
@@ -138,8 +138,8 @@ export default {
       myAnswerJiZhang: {},
       rightAnswerXianJinRiJi: {},
       myAnswerXianJinRiJi: {},
-      rightAnswerYinHangRiJi: {},
-      myAnswerYinHangRiJi: {}
+      rightAnswerYinHangRiJi: [],
+      myAnswerYinHangRiJi: []
     }
   },
   computed: {
@@ -173,7 +173,7 @@ export default {
           this.rightMaterialShow = false
           this.isRightActive = false
           this.rightAnswerYinHangRiJi = this.$store.state.answer['riJiZhang'][1]['answer']
-          this.myAnswerYinHangRiJi = {}
+          this.myAnswerYinHangRiJi = []
           break
       }
     }
@@ -272,7 +272,8 @@ export default {
         this.rightMaterialShow = false
         this.isRightActive = false
         this.rightAnswerYinHangRiJi = this.$store.state.answer['riJiZhang'][this.index]['answer']
-        this.myAnswerYinHangRiJi = {}
+        console.log(this.rightAnswerYinHangRiJi)
+        this.myAnswerYinHangRiJi = []
       }
     },
     back () {
@@ -280,6 +281,7 @@ export default {
         this.$message.warning('已经是第一题了')
         return false
       }
+      this.defaultMenu = this.defaultMenu.substring(0, 2) + (parseInt(this.defaultMenu.substring(2, this.defaultMenu.length)) - 1)
       this.index--
     },
     next () {
@@ -287,6 +289,7 @@ export default {
         this.$message.warning('已经是最后一题了')
         return false
       }
+      this.defaultMenu = this.defaultMenu.substring(0, 2) + (parseInt(this.defaultMenu.substring(2, this.defaultMenu.length)) + 1)
       this.index++
     }
   }
