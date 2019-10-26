@@ -51,11 +51,11 @@
                       <i class="el-icon-notebook-2"></i>
                       <span slot="title">明细分类账</span>
                     </template>
-                    <el-menu-item index="5-1">三栏式明细账</el-menu-item>
-                    <el-menu-item index="5-2">应交增值税明细账</el-menu-item>
-                    <el-menu-item index="5-3">数量金额式明细账</el-menu-item>
+                    <el-menu-item index="5-1" @click="changeSystem(0, 'ming-xi')">三栏式明细账</el-menu-item>
+                    <el-menu-item index="5-2" @click="changeSystem(1, 'zeng-zhi-ming-xi')">应交增值税明细账</el-menu-item>
+                    <el-menu-item index="5-3" @click="changeSystem(2, 'ming-xi')">数量金额式明细账</el-menu-item>
                   </el-submenu>
-                  <el-menu-item index="6">
+                  <el-menu-item index="6" @click="changeSystem(0, 't-xing-zhang')">
                     <i class="el-icon-notebook-1"></i>
                     <span slot="title">T型账</span>
                   </el-menu-item>
@@ -63,7 +63,7 @@
                     <i class="el-icon-document-copy"></i>
                     <span slot="title">科目汇总表</span>
                   </el-menu-item>
-                  <el-menu-item index="8">
+                  <el-menu-item index="8" @click="changeSystem(0, 'zong-fen-lei-zhang')">
                     <i class="el-icon-reading"></i>
                     <span slot="title">总分类账</span>
                   </el-menu-item>
@@ -100,6 +100,18 @@
                   <div v-if="system === 'yin-hang-ri-ji'" class="wrap-content flex-1">
                     <Parseyinhangrijizhang :myAnswer="myAnswerYinHangRiJi" :rightAnswer="rightAnswerYinHangRiJi" />
                   </div>
+                  <div v-if="system === 'ming-xi'" class="wrap-content flex-1">
+                    <Parsemingxizhang :myAnswer="myAnswerMingXiZhang" :rightAnswer="rightAnswerMingXiZhang" :index="index" />
+                  </div>
+                  <div v-if="system === 'zeng-zhi-ming-xi'" class="wrap-content flex-1">
+                    <Parsezengzhimingxizhang :myAnswer="myAnswerZengZhiMingXiZhang" :rightAnswer="rightAnswerZengZhiMingXiZhang" :index="index" />
+                  </div>
+                  <div v-if="system === 't-xing-zhang'" class="wrap-content flex-1">
+                    <Parsetxingzhang :myAnswer="myAnswerTXingZhang" :rightAnswer="rightAnswerTXingZhang" />
+                  </div>
+                  <div v-if="system === 'zong-fen-lei-zhang'" class="wrap-content flex-1">
+                    <Parsezongfenleizhang :myAnswer="myAnswerZongFenLeiZhang" :rightAnswer="rightAnswerZongFenLeiZhang" />
+                  </div>
                 </div>
                 <div v-if="rightMaterialShow" v-show="isRightActive" class="material-parent" style="height: 100%">
                   <Material :material-data="currentData?currentData.resource!==''?JSON.parse(currentData.resource):[]:[]" />
@@ -119,9 +131,13 @@ import Material from '../main/components/Material/Material'
 import ParsePingzheng from './components/pingzheng'
 import Parsexianjinrijizhang from './components/xianjinrijizhang'
 import Parseyinhangrijizhang from './components/yinhangrijizhang'
+import Parsemingxizhang from './components/mingxizhang'
+import Parsezengzhimingxizhang from './components/zengzhimingxizhang'
+import Parsetxingzhang from './components/txingzhang'
+import Parsezongfenleizhang from './components/zongfenleizhang'
 export default {
   name: 'Index',
-  components: { Parseyinhangrijizhang, Parsexianjinrijizhang, splitPane, ParsePingzheng, Material },
+  components: { Parsezongfenleizhang, Parsetxingzhang, Parsezengzhimingxizhang, Parsemingxizhang, Parseyinhangrijizhang, Parsexianjinrijizhang, splitPane, ParsePingzheng, Material },
   data () {
     return {
       isCollapse: false,
@@ -139,7 +155,15 @@ export default {
       rightAnswerXianJinRiJi: {},
       myAnswerXianJinRiJi: {},
       rightAnswerYinHangRiJi: [],
-      myAnswerYinHangRiJi: []
+      myAnswerYinHangRiJi: [],
+      rightAnswerMingXiZhang: [],
+      myAnswerMingXiZhang: [],
+      rightAnswerZengZhiMingXiZhang: {},
+      myAnswerZengZhiMingXiZhang: {},
+      rightAnswerTXingZhang: [],
+      myAnswerTXingZhang: [],
+      rightAnswerZongFenLeiZhang: [],
+      myAnswerZongFenLeiZhang: []
     }
   },
   computed: {
@@ -161,19 +185,43 @@ export default {
           this.isRightActive = true
           // 取第一张凭证的信息
           this.rightAnswerJiZhang = this.$store.state.answer['pingZheng'][this.index]
-          this.myAnswerJiZhang = {}
+          this.myAnswerJiZhang = this.$store.state.record['pingZheng'][this.index] ? this.$store.state.record['pingZheng'][this.index] : {}
           break
         case 'xian-jin-ri-ji':
           this.rightMaterialShow = false
           this.isRightActive = false
           this.rightAnswerXianJinRiJi = this.$store.state.answer['riJiZhang'][0]['answer']
-          this.myAnswerXianJinRiJi = {}
+          this.myAnswerXianJinRiJi = this.$store.state.record['riJiZhang'][0]['answer'] ? this.$store.state.record['riJiZhang'][0]['answer'] : {}
           break
         case 'yin-hang-ri-ji':
           this.rightMaterialShow = false
           this.isRightActive = false
           this.rightAnswerYinHangRiJi = this.$store.state.answer['riJiZhang'][1]['answer']
-          this.myAnswerYinHangRiJi = []
+          this.myAnswerYinHangRiJi = this.$store.state.record['riJiZhang'][1]['answer'] ? this.$store.state.record['riJiZhang'][1]['answer'] : []
+          break
+        case 'ming-xi':
+          this.rightMaterialShow = false
+          this.isRightActive = false
+          this.rightAnswerMingXiZhang = this.$store.state.answer['minXiZhang'][value]['answer']
+          this.myAnswerMingXiZhang = this.$store.state.record['minXiZhang'][value]['answer'] ? this.$store.state.record['minXiZhang'][value]['answer'] : []
+          break
+        case 'zeng-zhi-ming-xi':
+          this.rightMaterialShow = false
+          this.isRightActive = false
+          this.rightAnswerZengZhiMingXiZhang = this.$store.state.answer['minXiZhang'][value]['answer']
+          this.myAnswerZengZhiMingXiZhang = this.$store.state.record['minXiZhang'][value]['answer'] ? this.$store.state.record['minXiZhang'][value]['answer'] : []
+          break
+        case 't-xing-zhang':
+          this.rightMaterialShow = false
+          this.isRightActive = false
+          this.rightAnswerTXingZhang = this.$store.state.answer['TXingZhang']['answer']
+          this.myAnswerTXingZhang = this.$store.state.record['TXingZhang']['answer'] ? this.$store.state.record['TXingZhang']['answer'] : []
+          break
+        case 'zong-fen-lei-zhang':
+          this.rightMaterialShow = false
+          this.isRightActive = false
+          this.rightAnswerZongFenLeiZhang = this.$store.state.answer['zongFenLeiZhang']['answer']
+          this.myAnswerZongFenLeiZhang = this.$store.state.record['zongFenLeiZhang']['answer'] ? this.$store.state.record['zongFenLeiZhang']['answer'] : []
           break
       }
     }
@@ -188,67 +236,21 @@ export default {
           // 保存企业信息
           this.$store.commit('SAVE_COMPANY_INFO', res.data.data[0])
           this.companyInfo = res.data.data[0]
-          // 取正确答案记录
-          window.axios.get(`/company/answer/${this.trade_id}`).then(response => {
-            let res = response.data
-            if (!res.error_code) {
-              if (JSON.stringify(res.data) !== '[null]') {
-                // 数组转成对象
-                const answer = res.data[0]
-                // 现金日记账
-                if (answer['riJiZhang'][0] && answer['riJiZhang'][0]['answer'] && Array.isArray(answer['riJiZhang'][0]['answer'])) {
-                  answer['riJiZhang'][0]['answer'] = this.arrayToObj(answer['riJiZhang'][0]['answer'])
-                }
-                // 增值税明细账
-                if (answer['minXiZhang'][1] && answer['minXiZhang'][1]['answer'] && Array.isArray(answer['minXiZhang'][1]['answer'])) {
-                  answer['minXiZhang'][1]['answer'] = this.arrayToObj(answer['minXiZhang'][1]['answer'])
-                }
-                // 科目汇总表
-                if (Array.isArray(answer['keMuHuiZong'])) {
-                  answer['keMuHuiZong'] = this.arrayToObj(answer['keMuHuiZong'])
-                }
-                // 资产负债表
-                if (Array.isArray(answer['ziChanFuZhaiBiao'])) {
-                  answer['ziChanFuZhaiBiao'] = this.arrayToObj(answer['ziChanFuZhaiBiao'])
-                }
-                // 利润表
-                if (Array.isArray(answer['liRunBiao'])) {
-                  answer['liRunBiao'] = this.arrayToObj(answer['liRunBiao'])
-                }
-                this.$store.commit('SAVE_ANSWER', answer)
-              }
-            } else {
-              this.$message.error('请求失败')
-            }
-          }).catch((error) => {
-            console.log(error)
-          })
+          // 取正确答案
+          this.getAnswer()
           // 取用户答题记录
+          this.getRecord()
           // 渲染数据
           this.system = 'ji-zhang'
           this.handleData = this.companyInfo['business']
           this.currentData = this.handleData[this.index]
           this.rightMaterialShow = true
           this.isRightActive = true
-          // 取第一张凭证的信息
-          this.rightAnswerJiZhang = this.$store.state.answer['pingZheng'][this.index]
-          this.myAnswerJiZhang = {}
         } else {
           this.$message.error('未找到企业信息')
           // todo 跳转
         }
       })
-    },
-    showLeftList () {
-      if (this.isCollapse) {
-        this.isCollapse = false
-        this.asideWidth = '240px'
-      } else {
-        this.isCollapse = true
-        setTimeout(() => {
-          this.asideWidth = '64px'
-        }, 0)
-      }
     },
     changeSystem (index, system) {
       this.index = index
@@ -259,21 +261,139 @@ export default {
         this.handleData = this.$store.state.companyInfo.business
         this.currentData = this.handleData[this.index]
         this.rightAnswerJiZhang = this.$store.state.answer['pingZheng'][this.index]
-        this.myAnswerJiZhang = {}
+        this.myAnswerJiZhang = this.$store.state.record['pingZheng'][this.index] ? this.$store.state.record['pingZheng'][this.index] : {}
+        console.log(this.myAnswerJiZhang)
       }
       if (system === 'xian-jin-ri-ji') {
         this.rightMaterialShow = false
         this.isRightActive = false
         this.rightAnswerXianJinRiJi = this.$store.state.answer['riJiZhang'][this.index]['answer']
-        console.log(this.rightAnswerXianJinRiJi)
-        this.myAnswerXianJinRiJi = {}
+        this.myAnswerXianJinRiJi = this.$store.state.record['riJiZhang'][this.index]['answer'] ? this.$store.state.record['riJiZhang'][this.index]['answer'] : {}
       }
       if (system === 'yin-hang-ri-ji') {
         this.rightMaterialShow = false
         this.isRightActive = false
         this.rightAnswerYinHangRiJi = this.$store.state.answer['riJiZhang'][this.index]['answer']
-        console.log(this.rightAnswerYinHangRiJi)
-        this.myAnswerYinHangRiJi = []
+        this.myAnswerYinHangRiJi = this.$store.state.record['riJiZhang'][this.index]['answer'] ? this.$store.state.record['riJiZhang'][this.index]['answer'] : []
+      }
+      if (system === 'ming-xi') {
+        this.rightMaterialShow = false
+        this.isRightActive = false
+        this.rightAnswerMingXiZhang = this.$store.state.answer['minXiZhang'][this.index]['answer']
+        this.myAnswerMingXiZhang = this.$store.state.record['minXiZhang'][this.index]['answer'] ? this.$store.state.record['minXiZhang'][this.index]['answer'] : []
+      }
+      if (system === 'zeng-zhi-ming-xi') {
+        this.rightMaterialShow = false
+        this.isRightActive = false
+        this.rightAnswerZengZhiMingXiZhang = this.$store.state.answer['minXiZhang'][this.index]['answer']
+        this.myAnswerZengZhiMingXiZhang = this.$store.state.record['minXiZhang'][this.index]['answer'] ? this.$store.state.record['minXiZhang'][this.index]['answer'] : []
+      }
+      if (system === 't-xing-zhang') {
+        this.rightMaterialShow = false
+        this.isRightActive = false
+        this.rightAnswerTXingZhang = this.$store.state.answer['TXingZhang']['answer']
+        this.myAnswerTXingZhang = this.$store.state.record['TXingZhang']['answer'] ? this.$store.state.record['TXingZhang']['answer'] : []
+      }
+      if (system === 'zong-fen-lei-zhang') {
+        this.rightMaterialShow = false
+        this.isRightActive = false
+        this.rightAnswerZongFenLeiZhang = this.$store.state.answer['zongFenLeiZhang']['answer']
+        this.myAnswerZongFenLeiZhang = this.$store.state.record['zongFenLeiZhang']['answer'] ? this.$store.state.record['zongFenLeiZhang']['answer'] : []
+      }
+    },
+    getAnswer () {
+      // 取正确答案记录
+      window.axios.get(`/company/answer/${this.trade_id}`).then(response => {
+        let res = response.data
+        if (!res.error_code) {
+          if (JSON.stringify(res.data) !== '[null]') {
+            // 数组转成对象
+            const answer = res.data[0]
+            // 现金日记账
+            if (answer['riJiZhang'][0] && answer['riJiZhang'][0]['answer'] && Array.isArray(answer['riJiZhang'][0]['answer'])) {
+              answer['riJiZhang'][0]['answer'] = this.arrayToObj(answer['riJiZhang'][0]['answer'])
+            }
+            // 增值税明细账
+            if (answer['minXiZhang'][1] && answer['minXiZhang'][1]['answer'] && Array.isArray(answer['minXiZhang'][1]['answer'])) {
+              answer['minXiZhang'][1]['answer'] = this.arrayToObj(answer['minXiZhang'][1]['answer'])
+            }
+            // 科目汇总表
+            if (Array.isArray(answer['keMuHuiZong'])) {
+              answer['keMuHuiZong'] = this.arrayToObj(answer['keMuHuiZong'])
+            }
+            // 资产负债表
+            if (Array.isArray(answer['ziChanFuZhaiBiao'])) {
+              answer['ziChanFuZhaiBiao'] = this.arrayToObj(answer['ziChanFuZhaiBiao'])
+            }
+            // 利润表
+            if (Array.isArray(answer['liRunBiao'])) {
+              answer['liRunBiao'] = this.arrayToObj(answer['liRunBiao'])
+            }
+            this.$store.commit('SAVE_ANSWER', answer)
+            // 取第一张凭证的信息
+            this.rightAnswerJiZhang = this.$store.state.answer['pingZheng'][this.index]
+          }
+        } else {
+          this.$message.error('请求失败')
+        }
+      }).catch((error) => {
+        console.log(error)
+      })
+    },
+    getRecord () {
+      // 取用户记录
+      window.axios.get(`http://117.50.43.204:8000/stu/v1/stu/sx/1/record`).then(response => {
+        let res = response.data
+        if (res.data) {
+          // 数组转成对象
+          const answer = JSON.parse(res.data)
+          // 记账凭证
+          if (answer['pingzheng'] && Array.isArray(answer['pingzheng'])) {
+            answer['pingzheng'] = this.arrayToObj(answer['pingzheng'])
+          }
+          // 现金日记账
+          if (answer['riJiZhang'][0] && answer['riJiZhang'][0]['answer'] && Array.isArray(answer['riJiZhang'][0]['answer'])) {
+            answer['riJiZhang'][0]['answer'] = this.arrayToObj(answer['riJiZhang'][0]['answer'])
+          }
+          // 增值税明细账
+          if (answer['minXiZhang'][1] && answer['minXiZhang'][1]['answer'] && Array.isArray(answer['minXiZhang'][1]['answer'])) {
+            answer['minXiZhang'][1]['answer'] = this.arrayToObj(answer['minXiZhang'][1]['answer'])
+          }
+          // 科目汇总表
+          if (Array.isArray(answer['keMuHuiZong'])) {
+            answer['keMuHuiZong'] = this.arrayToObj(answer['keMuHuiZong'])
+          }
+          // 资产负债表
+          if (Array.isArray(answer['ziChanFuZhaiBiao'])) {
+            answer['ziChanFuZhaiBiao'] = this.arrayToObj(answer['ziChanFuZhaiBiao'])
+          }
+          // 利润表
+          if (Array.isArray(answer['liRunBiao'])) {
+            answer['liRunBiao'] = this.arrayToObj(answer['liRunBiao'])
+          }
+          this.$store.commit('SAVE_RECORD', answer)
+          this.myAnswerJiZhang = this.$store.state.record['pingZheng'][this.index] ? this.$store.state.record['pingZheng'][this.index] : {}
+        }
+      }).catch((error) => {
+        console.log(error)
+      })
+    },
+    arrayToObj (arrayData) {
+      let obj = {}
+      arrayData.forEach((value, index) => {
+        obj[index] = value
+      })
+      return obj
+    },
+    showLeftList () {
+      if (this.isCollapse) {
+        this.isCollapse = false
+        this.asideWidth = '240px'
+      } else {
+        this.isCollapse = true
+        setTimeout(() => {
+          this.asideWidth = '64px'
+        }, 0)
       }
     },
     back () {

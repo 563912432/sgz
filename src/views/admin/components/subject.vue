@@ -88,14 +88,16 @@ export default {
   },
   methods: {
     initData () {
-      this.subjectData = this.basicKeMu
+      this.subjectData = JSON.parse(sessionStorage.getItem('sgz_info'))['basicKeMu']
       // 合成最终结果
-      this.subjectData.forEach(v => {
-        let data = this.getTree(this.data, v.id)
-        if (data.length > 0) {
-          this.$set(v, 'children', data)
-        }
-      })
+      if (this.data.length > 0) {
+        this.subjectData.forEach(v => {
+          let data = this.getTree(this.data, v.id)
+          if (data.length > 0) {
+            this.$set(v, 'children', data)
+          }
+        })
+      }
       this.resultId = this.subjectData.concat(this.data).length + 1
     },
     getTree (treeData, parentId) {

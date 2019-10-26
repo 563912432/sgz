@@ -1,7 +1,7 @@
 <template>
-  <div class="Parseyinhangrijizhangdetail">
+  <div class="ParsezongfenleizhangDetail">
     <div class="title">
-      <span>银行存款日记账</span>
+      <span>总分类账</span>
       <span class="page font-12">第 <el-input v-model="initData.page" readonly size="mini" class="w-60"></el-input> 页</span>
     </div>
     <div class="text-left mt-15 font-13 flex flex-align-center">
@@ -93,7 +93,7 @@
 
 <script>
 export default {
-  name: 'Parseyinhangrijizhangdetail',
+  name: 'ParsezongfenleizhangDetail',
   data () {
     return {
       active: 0,
@@ -174,7 +174,7 @@ export default {
   }
 </style>
 <style lang="scss" scoped>
-  .Parseyinhangrijizhangdetail{
+  .ParsezongfenleizhangDetail{
     /*min-width: 900px;*/
     /*width: 100%;*/
     min-width: 500px;

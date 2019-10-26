@@ -5,7 +5,7 @@
       <div style="height: calc(100vh - 150px);padding: 10px;min-width: 500px" class="bg-white">
         <div class="title">
           <span>现金日记账</span>
-          <span class="page font-12">第 <el-input v-model="rightAnswer.page" size="mini" class="w-60"></el-input> 页</span>
+          <span class="page font-12">第 <el-input v-model="myAnswer.page" size="mini" class="w-60"></el-input> 页</span>
         </div>
         <div class="content">
           <!--头-->
@@ -13,7 +13,7 @@
             <!--年月日-->
             <div class="w-70 flex flex-column">
               <div class="h-30 line-height-30 border-right-bottom-grey flex flex-justify-space-between pl-10 pr-10">
-                <el-input v-model="rightAnswer.year" size="mini" class="w-50" style="background-color: transparent"></el-input> <span>年</span>
+                <el-input v-model="myAnswer.year" size="mini" class="w-50" style="background-color: transparent"></el-input> <span>年</span>
               </div>
               <div class="flex-1 flex"><span class="flex-1 flex flex-align-center flex-justify-center border-right-bottom-grey">月</span><span class="flex-1 flex flex-justify-center flex-align-center border-right-bottom-grey">日</span></div>
             </div>
@@ -37,7 +37,7 @@
           </div>
           <!--table-->
           <div class="content-table">
-            <div v-for="(item, index) in rightAnswer.table" :key="index" :class="['flex', 'h-36', 'position-relative', index + 1 === active?'bg-green':'']" >
+            <div v-for="(item, index) in myAnswer.table" :key="index" :class="['flex', 'h-36', 'position-relative', index + 1 === active?'bg-green':'']" >
               <div class="w-70 flex">
                 <!--月-->
                 <div class="flex-1 border-right-bottom-grey flex flex-justify-center flex-align-center center">

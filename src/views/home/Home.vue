@@ -201,61 +201,28 @@ export default {
             let subject = JSON.parse(res.data.data[0]['subject'])
             this.subjectData = this.basicKeMu
             // 合成最终结果
-            this.subjectData.forEach(v => {
-              let data = this.getTree(subject, v.id)
-              if (data.length > 0) {
-                this.$set(v, 'children', data)
-              }
-            })
+            if (subject) {
+              this.subjectData.forEach(v => {
+                let data = this.getTree(subject, v.id)
+                if (data.length > 0) {
+                  this.$set(v, 'children', data)
+                }
+              })
+            }
             this.$store.commit('SAVE_COMPANY_SUBJECT', subject)
             this.$store.commit('SAVE_KE_MU_INFO', this.deepTraversal(this.subjectData))
-            // sessionStorage.setItem('sgz_company_subject', JSON.stringify(subject))
-            // sessionStorage.setItem('sgz_ke_mu_subject', JSON.stringify(this.deepTraversal(this.subjectData)))
             // 角色 老师
             if (this.role === 'teacher') {
               this.$store.commit('SAVE_ROLE', 'teacher')
               sessionStorage.setItem('sgz_role', 'teacher')
-              // 取答案记录
-              window.axios.get(`/company/answer/${this.trade_id}`).then(response => {
-                let res = response.data
-                if (!res.error_code) {
-                  if (JSON.stringify(res.data) !== '[null]') {
-                    // 数组转成对象
-                    const answer = res.data[0]
-                    // 现金日记账
-                    if (answer['riJiZhang'][0] && answer['riJiZhang'][0]['answer'] && Array.isArray(answer['riJiZhang'][0]['answer'])) {
-                      answer['riJiZhang'][0]['answer'] = this.arrayToObj(answer['riJiZhang'][0]['answer'])
-                    }
-                    // 增值税明细账
-                    if (answer['minXiZhang'][1] && answer['minXiZhang'][1]['answer'] && Array.isArray(answer['minXiZhang'][1]['answer'])) {
-                      answer['minXiZhang'][1]['answer'] = this.arrayToObj(answer['minXiZhang'][1]['answer'])
-                    }
-                    // 科目汇总表
-                    if (Array.isArray(answer['keMuHuiZong'])) {
-                      answer['keMuHuiZong'] = this.arrayToObj(answer['keMuHuiZong'])
-                    }
-                    // 资产负债表
-                    if (Array.isArray(answer['ziChanFuZhaiBiao'])) {
-                      answer['ziChanFuZhaiBiao'] = this.arrayToObj(answer['ziChanFuZhaiBiao'])
-                    }
-                    // 利润表
-                    if (Array.isArray(answer['liRunBiao'])) {
-                      answer['liRunBiao'] = this.arrayToObj(answer['liRunBiao'])
-                    }
-                    this.$store.commit('SAVE_ANSWER', answer)
-                  }
-                } else {
-                  this.$message.error('请求失败')
-                }
-              }).catch((error) => {
-                console.log(error)
-              })
+              this.getAnswer()
             } else if (this.role === 'student') {
               // 角色 学生 开始时间
               let start = Date.parse(new Date()) / 1000
               this.$store.commit('SAVE_ROLE', 'student')
               sessionStorage.setItem('sgz_role', 'student')
               sessionStorage.setItem('sgz_start_at', start.toString())
+              this.getRecord()
             }
           } else {
             this.$message.error('未找到企业信息')
@@ -265,6 +232,76 @@ export default {
       } else {
         this.$message.error('缺少企业标识参数')
       }
+    },
+    getAnswer () {
+      // 取答案记录
+      window.axios.get(`/company/answer/${this.trade_id}`).then(response => {
+        let res = response.data
+        if (!res.error_code) {
+          if (JSON.stringify(res.data) !== '[null]') {
+            // 数组转成对象
+            const answer = res.data[0]
+            // 现金日记账
+            if (answer['riJiZhang'][0] && answer['riJiZhang'][0]['answer'] && Array.isArray(answer['riJiZhang'][0]['answer'])) {
+              answer['riJiZhang'][0]['answer'] = this.arrayToObj(answer['riJiZhang'][0]['answer'])
+            }
+            // 增值税明细账
+            if (answer['minXiZhang'][1] && answer['minXiZhang'][1]['answer'] && Array.isArray(answer['minXiZhang'][1]['answer'])) {
+              answer['minXiZhang'][1]['answer'] = this.arrayToObj(answer['minXiZhang'][1]['answer'])
+            }
+            // 科目汇总表
+            if (Array.isArray(answer['keMuHuiZong'])) {
+              answer['keMuHuiZong'] = this.arrayToObj(answer['keMuHuiZong'])
+            }
+            // 资产负债表
+            if (Array.isArray(answer['ziChanFuZhaiBiao'])) {
+              answer['ziChanFuZhaiBiao'] = this.arrayToObj(answer['ziChanFuZhaiBiao'])
+            }
+            // 利润表
+            if (Array.isArray(answer['liRunBiao'])) {
+              answer['liRunBiao'] = this.arrayToObj(answer['liRunBiao'])
+            }
+            this.$store.commit('SAVE_ANSWER', answer)
+          }
+        } else {
+          this.$message.error('请求失败')
+        }
+      }).catch((error) => {
+        console.log(error)
+      })
+    },
+    getRecord () {
+      // 取用户记录
+      window.axios.get(`http://117.50.43.204:8000/stu/v1/stu/sx/1/record`).then(response => {
+        let res = response.data
+        if (res.data) {
+          // 数组转成对象
+          const answer = JSON.parse(res.data)
+          // 现金日记账
+          if (answer['riJiZhang'][0] && answer['riJiZhang'][0]['answer'] && Array.isArray(answer['riJiZhang'][0]['answer'])) {
+            answer['riJiZhang'][0]['answer'] = this.arrayToObj(answer['riJiZhang'][0]['answer'])
+          }
+          // 增值税明细账
+          if (answer['minXiZhang'][1] && answer['minXiZhang'][1]['answer'] && Array.isArray(answer['minXiZhang'][1]['answer'])) {
+            answer['minXiZhang'][1]['answer'] = this.arrayToObj(answer['minXiZhang'][1]['answer'])
+          }
+          // 科目汇总表
+          if (Array.isArray(answer['keMuHuiZong'])) {
+            answer['keMuHuiZong'] = this.arrayToObj(answer['keMuHuiZong'])
+          }
+          // 资产负债表
+          if (Array.isArray(answer['ziChanFuZhaiBiao'])) {
+            answer['ziChanFuZhaiBiao'] = this.arrayToObj(answer['ziChanFuZhaiBiao'])
+          }
+          // 利润表
+          if (Array.isArray(answer['liRunBiao'])) {
+            answer['liRunBiao'] = this.arrayToObj(answer['liRunBiao'])
+          }
+          this.$store.commit('SAVE_ANSWER', answer)
+        }
+      }).catch((error) => {
+        console.log(error)
+      })
     },
     getTree (treeData, parentId) {
       let treeArr = []

@@ -1,11 +1,15 @@
 <template>
-  <div class="Parseyinhangrijizhangdetail">
+  <div class="ParsemingxizhangDetail">
     <div class="title">
-      <span>银行存款日记账</span>
-      <span class="page font-12">第 <el-input v-model="initData.page" readonly size="mini" class="w-60"></el-input> 页</span>
+      <span>明细账</span>
+      <span class="page font-12">
+        分页:<el-input v-model="initData.page" readonly size="mini" class="w-60"></el-input>
+        总页:<el-input v-model="initData.pageSum" readonly size="mini" class="w-60"></el-input>
+      </span>
     </div>
     <div class="text-left mt-15 font-13 flex flex-align-center">
-      <span>开户行：</span><el-input v-model="initData.yin_hang" readonly size="mini" class="w-160"></el-input>
+      <el-input v-model="initData.number_one" readonly size="mini" class="w-50"></el-input><span class="ml-5">级科目</span><el-input v-model="initData.subject_one" readonly size="mini" class="w-160 ml-5"></el-input>
+      <el-input v-model="initData.number_two" readonly size="mini" class="w-50 ml-20"></el-input><span class="ml-5">级科目</span><el-input v-model="initData.subject_two" readonly size="mini" class="w-160 ml-5"></el-input>
     </div>
     <div class="content">
       <!--头-->
@@ -13,13 +17,13 @@
         <!--年月日-->
         <div class="w-70 flex flex-column">
           <div class="h-30 line-height-30 border-right-bottom-grey flex flex-justify-space-between pl-10 pr-10">
-            <el-input v-model="initData.year" size="mini" readonly class="w-50" style="background-color: transparent"></el-input> <span>年</span>
+            <el-input v-model="initData.year" readonly size="mini" class="w-50" style="background-color: transparent"></el-input> <span>年</span>
           </div>
           <div class="flex-1 flex"><span class="flex-1 flex flex-align-center flex-justify-center border-right-bottom-grey">月</span><span class="flex-1 flex flex-justify-center flex-align-center border-right-bottom-grey">日</span></div>
         </div>
         <!--凭证字号-->
         <div class="w-70 flex flex-column">
-          <div class="h-30 line-height-30 border-right-bottom-grey">凭证</div>
+          <div class="h-30 line-height-30 border-right-bottom-grey text-center">凭证</div>
           <div class="flex-1 flex"><span class="flex-1 flex flex-align-center flex-justify-center border-right-bottom-grey">字</span><span class="flex-1 flex flex-justify-center flex-align-center border-right-bottom-grey">号</span></div>
         </div>
         <!--摘要-->
@@ -41,7 +45,7 @@
           <div class="w-70 flex">
             <!--月-->
             <div class="flex-1 border-right-bottom-grey flex flex-justify-center flex-align-center center">
-              <el-input v-model="item.year" readonly type="text" maxlength="2" size="small" style="text-align: center"/>
+              <el-input v-model="item.month" readonly type="text" maxlength="2" size="small" style="text-align: center"/>
             </div>
             <!--日-->
             <div class="flex-1 border-right-bottom-grey flex flex-justify-center flex-align-center center">
@@ -93,11 +97,10 @@
 
 <script>
 export default {
-  name: 'Parseyinhangrijizhangdetail',
+  name: 'ParsemingxizhangDetail',
   data () {
     return {
-      active: 0,
-      initData: {}
+      active: 0
     }
   },
   props: {
@@ -110,6 +113,11 @@ export default {
       type: Array,
       required: true,
       defaults: []
+    },
+    index: {
+      type: Number,
+      required: true,
+      default: 0
     },
     type: {
       type: String,
@@ -131,6 +139,9 @@ export default {
 }
 </script>
 <style>
+  .ml-5 {
+    margin-left: 5px;
+  }
   .pl-10{
     padding-left: 10px;
   }
@@ -174,14 +185,12 @@ export default {
   }
 </style>
 <style lang="scss" scoped>
-  .Parseyinhangrijizhangdetail{
+  .ParsemingxizhangDetail{
     /*min-width: 900px;*/
-    /*width: 100%;*/
-    min-width: 500px;
-    margin: 0 auto;
     color: #333333;
     padding: 10px;
-    /*padding: 20px 45px;*/
+    min-width: 500px;
+    margin: 0 auto;
     .title{
       font-size: 24px;
       font-weight: bold;
@@ -195,7 +204,7 @@ export default {
       }
     }
     .content{
-      margin-top: 35px;
+      margin-top: 15px;
       border-style: solid;
       border-color: #E8E8E8;
       border-width: 1px 1px 0 1px;

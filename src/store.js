@@ -104,13 +104,6 @@ export default new Vuex.Store({
     ],
     // 科目列表【完整的科目】（数量金额式明细账）
     keMuShuLiangMingXiInfo: [],
-    // 总分类账
-    // ZongFenLeiZhangInfo: {
-    //   title: '总分类账',
-    //   data: [
-    //     { number: 'GYZ01', title: '总分类账', type: 3, subject: [{ name: '本年利润' }, { name: '财务费用' }, { name: '短期借款' }], material: [{ title: '', content: 'http://www.wenyunjy.com/Uploads/manualAccounts/20190529/5cee42ecc3dfd.jpg' }, { title: '', content: 'http://www.wenyunjy.com/Uploads/manualAccounts/20190529/5cee42ece2592.jpg' }] }
-    //   ]
-    // },
     // 总的结果 【对比答案需要的结果存储】
     answer: {
       pingZheng: {},
@@ -138,7 +131,34 @@ export default new Vuex.Store({
       ziChanFuZhaiBiao: {},
       liRunBiao: {}
     },
-    companyInfo: {}
+    companyInfo: {},
+    // 用户答案
+    record: {
+      pingZheng: {},
+      riJiZhang: [
+        // 现金日记账记录
+        { abstract: '现金日记账', type: 2, answer: {} },
+        // 银行存款日记账记录
+        { abstract: '银行存款日记账', type: 3, answer: [{ subject_name: '', second_subject_name: '', page: '', info: [] }] }
+      ],
+      minXiZhang: [
+        // 三栏式明细账记录
+        { abstract: '三栏式明细账', type: 3, answer: [{ subject_name: '', second_subject_name: '', page: '', info: [] }] },
+        // 应交增值税明细账
+        { abstract: '应交增值税明细账', type: 2, answer: {} },
+        // 数量金额式明细账
+        { abstract: '数量金额式明细账', type: 3, answer: [{ subject_name: '', second_subject_name: '', page: '', info: [] }] }
+      ],
+      TXingZhang: {
+        abstract: 'T型账', type: 3, answer: [{ subject_name: '', second_subject_name: '', page: '', info: [] }]
+      },
+      keMuHuiZong: {},
+      zongFenLeiZhang: {
+        abstract: '总分类账', type: 3, answer: [{ subject_name: '', page: '', info: [] }]
+      },
+      ziChanFuZhaiBiao: {},
+      liRunBiao: {}
+    }
   },
   mutations: {
     SAVE_ROLE (state, data) {
@@ -155,6 +175,9 @@ export default new Vuex.Store({
     },
     SAVE_ANSWER (state, data) {
       state.answer = data
+    },
+    SAVE_RECORD (state, data) {
+      state.record = data
     },
     // 保存记账凭证做题记录
     SAVE_JI_ZHANG_ANSWER (state, data) {
