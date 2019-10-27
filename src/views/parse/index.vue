@@ -5,15 +5,20 @@
         <!--框架顶端-->
         <div class="apex">
           <div class="title">手工全盘账解析</div>
-          <div class="score-bg"></div>
-          <div class="score">总计得分：90分</div>
+<!--          <div class="score-bg"></div>-->
+<!--          <div class="score">总计得分：90分</div>-->
           <div class="backtrack">返回</div>
         </div>
       </el-header>
       <split-pane split="vertical" :min-percent='0' :default-percent='0'>
         <template slot="paneL">
           <div class="left-container">
-            123123
+            <ParseReferQiChu v-if="leftPanel === leftPanelType.Qi_Chu" @toggleClick="closeRefer" />
+            <ParseReferJiZhang v-if="leftPanel === leftPanelType.Ji_Zhang" :type="referJiZhangType" @toggleClick="closeRefer" />
+            <ParseReferTXingZhang v-if="leftPanel === leftPanelType.T_Xing_Zhang" :type="referTXingZhangType" @backClick="closeRefer" />
+            <ParseReferkeMuHuiZong v-if="leftPanel === leftPanelType.Ke_Mu_Hui_Zong" :type="referKeMuHuiZongType" @toggleClick="closeRefer" />
+            <ParseReferZongFenLeiZhang v-if="leftPanel === leftPanelType.Zong_Fen_Lei" :type="referZongFenLeiType" @toggleClick="closeRefer" />
+            <ParseReferSanLanMingXiZhang v-if="leftPanel === leftPanelType.Ming_Xi_Fen_Lei" :answerType="referMingXiType" @toggleClick="closeRefer" />
           </div>
         </template>
         <template slot="paneR">
@@ -51,15 +56,15 @@
                       <i class="el-icon-notebook-2"></i>
                       <span slot="title">明细分类账</span>
                     </template>
-                    <el-menu-item index="5-1" @click="changeSystem(0, 'ming-xi')">三栏式明细账</el-menu-item>
-                    <el-menu-item index="5-2" @click="changeSystem(1, 'zeng-zhi-ming-xi')">应交增值税明细账</el-menu-item>
-                    <el-menu-item index="5-3" @click="changeSystem(2, 'ming-xi')">数量金额式明细账</el-menu-item>
+                    <el-menu-item index="5-1" @click="changeSystem(0, 'ming-xi-zhang')">三栏式明细账</el-menu-item>
+                    <el-menu-item index="5-2" @click="changeSystem(1, 'zeng-zhi-ming-xi-zhang')">应交增值税明细账</el-menu-item>
+                    <el-menu-item index="5-3" @click="changeSystem(2, 'ming-xi-zhang')">数量金额式明细账</el-menu-item>
                   </el-submenu>
                   <el-menu-item index="6" @click="changeSystem(0, 't-xing-zhang')">
                     <i class="el-icon-notebook-1"></i>
                     <span slot="title">T型账</span>
                   </el-menu-item>
-                  <el-menu-item index="7">
+                  <el-menu-item index="7" @click="changeSystem(0, 'ke-mu-hui-zong')">
                     <i class="el-icon-document-copy"></i>
                     <span slot="title">科目汇总表</span>
                   </el-menu-item>
@@ -67,11 +72,11 @@
                     <i class="el-icon-reading"></i>
                     <span slot="title">总分类账</span>
                   </el-menu-item>
-                  <el-menu-item index="9">
+                  <el-menu-item index="9" @click="changeSystem(0, 'zi-chan-fu-zhai-biao')">
                     <i class="el-icon-data-analysis"></i>
                     <span slot="title">资产负债表</span>
                   </el-menu-item>
-                  <el-menu-item index="10">
+                  <el-menu-item index="10" @click="changeSystem(0, 'li-run-biao')">
                     <i class="el-icon-data-line"></i>
                     <span slot="title">利润表</span>
                   </el-menu-item>
@@ -80,7 +85,9 @@
             </el-scrollbar>
             <el-main class="flex-1 flex flex-column">
               <div class="center-top flex flex-justify-space-between">
-                <span class="course-info">本题得分：5分/（共20分）</span>
+<!--                <span class="course-info">本题得分：5分/（共20分）</span>-->
+                <span></span>
+                <!--参考-->
                 <div class="">
                   <el-button type="success" size="mini">全屏查看</el-button>
                   <el-button type="success" size="mini">视频讲解</el-button>
@@ -95,22 +102,31 @@
                     <ParsePingzheng :business="currentData" :myAnswer="myAnswerJiZhang" :rightAnswer="rightAnswerJiZhang" />
                   </div>
                   <div v-if="system === 'xian-jin-ri-ji'" class="wrap-content flex-1">
-                    <Parsexianjinrijizhang :myAnswer="myAnswerXianJinRiJi" :rightAnswer="rightAnswerXianJinRiJi" />
+                    <Parsexianjinrijizhang :myAnswer="myAnswerXianJinRiJi" :rightAnswer="rightAnswerXianJinRiJi" @clickQiChuMyAnswer="qiChuMyAnswer" @clickJiZhangMyAnswer="jiZhangMyAnswer" @clickJiZhangRightAnswer="jiZhangRightAnswer"/>
                   </div>
                   <div v-if="system === 'yin-hang-ri-ji'" class="wrap-content flex-1">
-                    <Parseyinhangrijizhang :myAnswer="myAnswerYinHangRiJi" :rightAnswer="rightAnswerYinHangRiJi" />
+                    <Parseyinhangrijizhang :myAnswer="myAnswerYinHangRiJi" :rightAnswer="rightAnswerYinHangRiJi" @clickQiChuMyAnswer="qiChuMyAnswer" @clickJiZhangMyAnswer="jiZhangMyAnswer" @clickJiZhangRightAnswer="jiZhangRightAnswer" />
                   </div>
-                  <div v-if="system === 'ming-xi'" class="wrap-content flex-1">
-                    <Parsemingxizhang :myAnswer="myAnswerMingXiZhang" :rightAnswer="rightAnswerMingXiZhang" :index="index" />
+                  <div v-if="system === 'ming-xi-zhang'" class="wrap-content flex-1">
+                    <Parsemingxizhang :myAnswer="myAnswerMingXiZhang" :rightAnswer="rightAnswerMingXiZhang" :index="index" @clickQiChuMyAnswer="qiChuMyAnswer" @clickJiZhangMyAnswer="jiZhangMyAnswer" @clickJiZhangRightAnswer="jiZhangRightAnswer" />
                   </div>
-                  <div v-if="system === 'zeng-zhi-ming-xi'" class="wrap-content flex-1">
-                    <Parsezengzhimingxizhang :myAnswer="myAnswerZengZhiMingXiZhang" :rightAnswer="rightAnswerZengZhiMingXiZhang" :index="index" />
+                  <div v-if="system === 'zeng-zhi-ming-xi-zhang'" class="wrap-content flex-1">
+                    <Parsezengzhimingxizhang :myAnswer="myAnswerZengZhiMingXiZhang" :rightAnswer="rightAnswerZengZhiMingXiZhang" :index="index" @clickQiChuMyAnswer="qiChuMyAnswer" @clickJiZhangMyAnswer="jiZhangMyAnswer" @clickJiZhangRightAnswer="jiZhangRightAnswer" />
                   </div>
                   <div v-if="system === 't-xing-zhang'" class="wrap-content flex-1">
-                    <Parsetxingzhang :myAnswer="myAnswerTXingZhang" :rightAnswer="rightAnswerTXingZhang" />
+                    <Parsetxingzhang :myAnswer="myAnswerTXingZhang" :rightAnswer="rightAnswerTXingZhang" @clickQiChuMyAnswer="qiChuMyAnswer" @clickJiZhangMyAnswer="jiZhangMyAnswer" @clickJiZhangRightAnswer="jiZhangRightAnswer"/>
                   </div>
                   <div v-if="system === 'zong-fen-lei-zhang'" class="wrap-content flex-1">
-                    <Parsezongfenleizhang :myAnswer="myAnswerZongFenLeiZhang" :rightAnswer="rightAnswerZongFenLeiZhang" />
+                    <Parsezongfenleizhang :myAnswer="myAnswerZongFenLeiZhang" :rightAnswer="rightAnswerZongFenLeiZhang" @clickQiChuMyAnswer="qiChuMyAnswer" @clickKeMuHuiZongMyAnswer="keMuHuiZongMyAnswer" @clickKeMuHuiZongRightAnswer="keMuHuiZongRightAnswer" />
+                  </div>
+                  <div v-if="system === 'ke-mu-hui-zong'" class="wrap-content flex-1">
+                    <Parsekemuhuizong :myAnswer="myAnswerKeMuHuiZong" :rightAnswer="rightAnswerKeMuHuiZong" @clickJiZhangMyAnswer="jiZhangMyAnswer"  @clickTXingZhangMyAnswer="tXingZhangMyAnswer" @clickTXingZhangRightAnswer="tXingZhangRightAnswer"/>
+                  </div>
+                  <div v-if="system === 'zi-chan-fu-zhai-biao'" class="wrap-content flex-1">
+                    <parsezichanfuzhai :myAnswer="myAnswerZiChanFuZhai" :rightAnswer="rightAnswerZiChanFuZhai" @clickQiChuMyAnswer="qiChuMyAnswer" @clickMingXiMyAnswer="mingXiMyAnswer" @clickMingXiRightAnswer="mingXiRightAnswer" @clickZongFenLeiMyAnswer="zongFenLeiMyAnswer" @clickZongFenLeiRightAnswer="zongFenLeiRightAnswer"/>
+                  </div>
+                  <div v-if="system === 'li-run-biao'" class="wrap-content flex-1">
+                    <Parselirun :myAnswer="myAnswerLiRun" :rightAnswer="rightAnswerLiRun" @clickQiChuMyAnswer="qiChuMyAnswer" @clickMingXiMyAnswer="mingXiMyAnswer" @clickMingXiRightAnswer="mingXiRightAnswer" @clickZongFenLeiMyAnswer="zongFenLeiMyAnswer" @clickZongFenLeiRightAnswer="zongFenLeiRightAnswer"/>
                   </div>
                 </div>
                 <div v-if="rightMaterialShow" v-show="isRightActive" class="material-parent" style="height: 100%">
@@ -135,9 +151,18 @@ import Parsemingxizhang from './components/mingxizhang'
 import Parsezengzhimingxizhang from './components/zengzhimingxizhang'
 import Parsetxingzhang from './components/txingzhang'
 import Parsezongfenleizhang from './components/zongfenleizhang'
+import Parsekemuhuizong from './components/kemuhuizong'
+import Parsezichanfuzhai from './components/zichanfuzhai'
+import Parselirun from './components/lirun'
+import ParseReferQiChu from './components/Refer/ReferQiChu'
+import ParseReferJiZhang from './components/Refer/ReferJiZhang'
+import ParseReferTXingZhang from './components/Refer/ReferTXingZhang'
+import ParseReferkeMuHuiZong from './components/Refer/ReferKeMuHuiZong'
+import ParseReferZongFenLeiZhang from './components/Refer/ReferZongFenLeiZhang'
+import ParseReferSanLanMingXiZhang from './components/Refer/ReferMingXiFenLeiZhang'
 export default {
   name: 'Index',
-  components: { Parsezongfenleizhang, Parsetxingzhang, Parsezengzhimingxizhang, Parsemingxizhang, Parseyinhangrijizhang, Parsexianjinrijizhang, splitPane, ParsePingzheng, Material },
+  components: { ParseReferSanLanMingXiZhang, ParseReferZongFenLeiZhang, ParseReferkeMuHuiZong, ParseReferTXingZhang, ParseReferJiZhang, ParseReferQiChu, Parselirun, Parsezichanfuzhai, Parsekemuhuizong, Parsezongfenleizhang, Parsetxingzhang, Parsezengzhimingxizhang, Parsemingxizhang, Parseyinhangrijizhang, Parsexianjinrijizhang, splitPane, ParsePingzheng, Material },
   data () {
     return {
       isCollapse: false,
@@ -163,12 +188,29 @@ export default {
       rightAnswerTXingZhang: [],
       myAnswerTXingZhang: [],
       rightAnswerZongFenLeiZhang: [],
-      myAnswerZongFenLeiZhang: []
+      myAnswerZongFenLeiZhang: [],
+      rightAnswerKeMuHuiZong: {},
+      myAnswerKeMuHuiZong: {},
+      rightAnswerZiChanFuZhai: {},
+      myAnswerZiChanFuZhai: {},
+      rightAnswerLiRun: {},
+      myAnswerLiRun: {},
+      leftPanel: 2, // 1：流程图 2：期初余额 3：记账凭证
+      leftPanelShow: false,
+      referJiZhangType: 1,
+      referTXingZhangType: 1,
+      referKeMuHuiZongType: 1,
+      referMingXiType: 1,
+      referZongFenLeiType: 1
     }
   },
   computed: {
     trade_id () {
       return this.$route.params.trade_id
+    },
+    // 左侧收缩栏类型
+    leftPanelType () {
+      return this.$store.state.leftPanelType
     }
   },
   created () {
@@ -199,13 +241,13 @@ export default {
           this.rightAnswerYinHangRiJi = this.$store.state.answer['riJiZhang'][1]['answer']
           this.myAnswerYinHangRiJi = this.$store.state.record['riJiZhang'][1]['answer'] ? this.$store.state.record['riJiZhang'][1]['answer'] : []
           break
-        case 'ming-xi':
+        case 'ming-xi-zhang':
           this.rightMaterialShow = false
           this.isRightActive = false
           this.rightAnswerMingXiZhang = this.$store.state.answer['minXiZhang'][value]['answer']
           this.myAnswerMingXiZhang = this.$store.state.record['minXiZhang'][value]['answer'] ? this.$store.state.record['minXiZhang'][value]['answer'] : []
           break
-        case 'zeng-zhi-ming-xi':
+        case 'zeng-zhi-ming-xi-zhang':
           this.rightMaterialShow = false
           this.isRightActive = false
           this.rightAnswerZengZhiMingXiZhang = this.$store.state.answer['minXiZhang'][value]['answer']
@@ -223,6 +265,39 @@ export default {
           this.rightAnswerZongFenLeiZhang = this.$store.state.answer['zongFenLeiZhang']['answer']
           this.myAnswerZongFenLeiZhang = this.$store.state.record['zongFenLeiZhang']['answer'] ? this.$store.state.record['zongFenLeiZhang']['answer'] : []
           break
+        case 'ke-mu-hui-zong':
+          this.rightMaterialShow = false
+          this.isRightActive = false
+          this.rightAnswerKeMuHuiZong = this.$store.state.answer['keMuHuiZong']
+          this.myAnswerKeMuHuiZong = this.$store.state.record['keMuHuiZong'] ? this.$store.state.record['keMuHuiZong'] : {}
+          break
+        case 'zi-chan-fu-zhai-biao':
+          this.rightMaterialShow = false
+          this.isRightActive = false
+          this.rightAnswerZiChanFuZhai = this.$store.state.answer['ziChanFuZhaiBiao']
+          this.myAnswerZiChanFuZhai = this.$store.state.record['ziChanFuZhaiBiao'] ? this.$store.state.record['ziChanFuZhaiBiao'] : {}
+          break
+        case 'li-run-biao':
+          this.rightMaterialShow = false
+          this.isRightActive = false
+          this.rightAnswerLiRun = this.$store.state.answer['liRunBiao']
+          this.myAnswerLiRun = this.$store.state.record['liRunBiao'] ? this.$store.state.record['liRunBiao'] : {}
+          break
+      }
+    },
+    // 切换左侧参考栏【流程图】的显示隐藏
+    leftPanelShow (value) {
+      let paneL = document.getElementsByClassName('splitter-paneL')[0]
+      let paneR = document.getElementsByClassName('splitter-paneR')[0]
+      let paneResizer = document.getElementsByClassName('splitter-pane-resizer')[0]
+      if (value) {
+        paneL.style.width = '40%'
+        paneR.style.width = '60%'
+        paneResizer.style.left = '40%'
+      } else {
+        paneL.style.width = '0%'
+        paneR.style.width = '100%'
+        paneResizer.style.left = '0%'
       }
     }
   },
@@ -255,6 +330,7 @@ export default {
     changeSystem (index, system) {
       this.index = index
       this.system = system
+      this.leftPanelShow = false
       if (system === 'ji-zhang') {
         this.rightMaterialShow = true
         this.isRightActive = true
@@ -276,13 +352,13 @@ export default {
         this.rightAnswerYinHangRiJi = this.$store.state.answer['riJiZhang'][this.index]['answer']
         this.myAnswerYinHangRiJi = this.$store.state.record['riJiZhang'][this.index]['answer'] ? this.$store.state.record['riJiZhang'][this.index]['answer'] : []
       }
-      if (system === 'ming-xi') {
+      if (system === 'ming-xi-zhang') {
         this.rightMaterialShow = false
         this.isRightActive = false
         this.rightAnswerMingXiZhang = this.$store.state.answer['minXiZhang'][this.index]['answer']
         this.myAnswerMingXiZhang = this.$store.state.record['minXiZhang'][this.index]['answer'] ? this.$store.state.record['minXiZhang'][this.index]['answer'] : []
       }
-      if (system === 'zeng-zhi-ming-xi') {
+      if (system === 'zeng-zhi-ming-xi-zhang') {
         this.rightMaterialShow = false
         this.isRightActive = false
         this.rightAnswerZengZhiMingXiZhang = this.$store.state.answer['minXiZhang'][this.index]['answer']
@@ -300,6 +376,149 @@ export default {
         this.rightAnswerZongFenLeiZhang = this.$store.state.answer['zongFenLeiZhang']['answer']
         this.myAnswerZongFenLeiZhang = this.$store.state.record['zongFenLeiZhang']['answer'] ? this.$store.state.record['zongFenLeiZhang']['answer'] : []
       }
+      if (system === 'ke-mu-hui-zong') {
+        this.rightMaterialShow = false
+        this.isRightActive = false
+        this.rightAnswerKeMuHuiZong = this.$store.state.answer['keMuHuiZong']
+        this.myAnswerKeMuHuiZong = this.$store.state.record['keMuHuiZong'] ? this.$store.state.record['keMuHuiZong'] : {}
+      }
+      if (system === 'zi-chan-fu-zhai-biao') {
+        this.rightMaterialShow = false
+        this.isRightActive = false
+        this.rightAnswerZiChanFuZhai = this.$store.state.answer['ziChanFuZhaiBiao']
+        this.myAnswerZiChanFuZhai = this.$store.state.record['ziChanFuZhaiBiao'] ? this.$store.state.record['ziChanFuZhaiBiao'] : {}
+      }
+      if (system === 'li-run-biao') {
+        this.rightMaterialShow = false
+        this.isRightActive = false
+        this.rightAnswerLiRun = this.$store.state.answer['liRunBiao']
+        this.myAnswerLiRun = this.$store.state.record['liRunBiao'] ? this.$store.state.record['liRunBiao'] : {}
+      }
+    },
+    // 期初余额的点击事件【切换左侧参考页面内容】
+    qiChuMyAnswer () {
+      if (this.leftPanel === this.leftPanelType.Qi_Chu) {
+        this.leftPanelShow = !this.leftPanelShow
+      } else {
+        if (!this.leftPanelShow) {
+          this.leftPanelShow = true
+        }
+        this.leftPanel = this.leftPanelType.Qi_Chu
+      }
+    },
+    jiZhangMyAnswer () {
+      this.referJiZhangType = 1
+      if (this.leftPanel === this.leftPanelType.Ji_Zhang) {
+        this.leftPanelShow = !this.leftPanelShow
+      } else {
+        if (!this.leftPanelShow) {
+          this.leftPanelShow = true
+        }
+        this.leftPanel = this.leftPanelType.Ji_Zhang
+      }
+    },
+    jiZhangRightAnswer () {
+      this.referJiZhangType = 2
+      if (this.leftPanel === this.leftPanelType.Ji_Zhang) {
+        this.leftPanelShow = !this.leftPanelShow
+      } else {
+        if (!this.leftPanelShow) {
+          this.leftPanelShow = true
+        }
+        this.leftPanel = this.leftPanelType.Ji_Zhang
+      }
+    },
+    tXingZhangMyAnswer () {
+      this.referTXingZhangType = 1
+      if (this.leftPanel === this.leftPanelType.T_Xing_Zhang) {
+        this.leftPanelShow = !this.leftPanelShow
+      } else {
+        if (!this.leftPanelShow) {
+          this.leftPanelShow = true
+        }
+        this.leftPanel = this.leftPanelType.T_Xing_Zhang
+      }
+    },
+    tXingZhangRightAnswer () {
+      this.referTXingZhangType = 2
+      if (this.leftPanel === this.leftPanelType.T_Xing_Zhang) {
+        this.leftPanelShow = !this.leftPanelShow
+      } else {
+        if (!this.leftPanelShow) {
+          this.leftPanelShow = true
+        }
+        this.leftPanel = this.leftPanelType.T_Xing_Zhang
+      }
+    },
+    keMuHuiZongMyAnswer () {
+      this.referKeMuHuiZongType = 1
+      if (this.leftPanel === this.leftPanelType.Ke_Mu_Hui_Zong) {
+        this.leftPanelShow = !this.leftPanelShow
+      } else {
+        if (!this.leftPanelShow) {
+          this.leftPanelShow = true
+        }
+        this.leftPanel = this.leftPanelType.Ke_Mu_Hui_Zong
+      }
+    },
+    keMuHuiZongRightAnswer () {
+      this.referTXingZhangType = 2
+      if (this.leftPanel === this.leftPanelType.Ke_Mu_Hui_Zong) {
+        this.leftPanelShow = !this.leftPanelShow
+      } else {
+        if (!this.leftPanelShow) {
+          this.leftPanelShow = true
+        }
+        this.leftPanel = this.leftPanelType.Ke_Mu_Hui_Zong
+      }
+    },
+    mingXiMyAnswer () {
+      this.referMingXiType = 1
+      if (this.leftPanel === this.leftPanelType.Ming_Xi_Fen_Lei) {
+        this.leftPanelShow = !this.leftPanelShow
+      } else {
+        if (!this.leftPanelShow) {
+          this.leftPanelShow = true
+        }
+        this.leftPanel = this.leftPanelType.Ming_Xi_Fen_Lei
+      }
+    },
+    mingXiRightAnswer () {
+      this.referMingXiType = 2
+      if (this.leftPanel === this.leftPanelType.Ming_Xi_Fen_Lei) {
+        this.leftPanelShow = !this.leftPanelShow
+      } else {
+        if (!this.leftPanelShow) {
+          this.leftPanelShow = true
+        }
+        this.leftPanel = this.leftPanelType.Ming_Xi_Fen_Lei
+      }
+    },
+    zongFenLeiMyAnswer () {
+      this.referZongFenLeiType = 1
+      if (this.leftPanel === this.leftPanelType.Zong_Fen_Lei) {
+        this.leftPanelShow = !this.leftPanelShow
+      } else {
+        if (!this.leftPanelShow) {
+          this.leftPanelShow = true
+        }
+        this.leftPanel = this.leftPanelType.Zong_Fen_Lei
+      }
+    },
+    zongFenLeiRightAnswer () {
+      this.referZongFenLeiType = 2
+      if (this.leftPanel === this.leftPanelType.Zong_Fen_Lei) {
+        this.leftPanelShow = !this.leftPanelShow
+      } else {
+        if (!this.leftPanelShow) {
+          this.leftPanelShow = true
+        }
+        this.leftPanel = this.leftPanelType.Zong_Fen_Lei
+      }
+    },
+    // 关闭参考
+    closeRefer () {
+      this.leftPanelShow = false
     },
     getAnswer () {
       // 取正确答案记录
@@ -539,7 +758,7 @@ export default {
     background-color: #F0F2F5;
     color: #333;
     .wrap-content-parent{
-      padding: 15px;
+      padding: 10px;
       height: auto;
       overflow: auto;
       background-color: transparent;

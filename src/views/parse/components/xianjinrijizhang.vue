@@ -1,6 +1,16 @@
 <template>
   <div class="Parsexianjinrijizhang flex">
-    <div class="flex-1" style="overflow-x: auto">
+    <div v-if="leftShow" class="flex-1" style="overflow-x: auto">
+      <div class="mb-12 flex flex-justify-space-between pl-10 pr-10">
+        <span>
+          <el-button plain size="small" @click="qiChuMyAnswer">期初余额</el-button>
+          <el-button plain size="small" @click="jiZhangMyAnswer">记账凭证</el-button>
+        </span>
+        <span>
+          <el-button v-if="leftShow && rightShow" type="primary" size="small" icon="el-icon-d-arrow-right" circle @click="showLeft"></el-button>
+          <el-button v-if="leftShow && !rightShow" type="primary" size="small" icon="el-icon-d-arrow-left" circle @click="rightShow = !rightShow"></el-button>
+        </span>
+      </div>
       <p class="mb-12">我的答案</p>
       <div style="height: calc(100vh - 150px);padding: 10px;min-width: 500px" class="bg-white">
         <div class="title">
@@ -87,7 +97,17 @@
         </div>
       </div>
     </div>
-    <div class="flex-1 ml-10" style="overflow-x: auto">
+    <div v-if="rightShow" class="flex-1 ml-10" style="overflow-x: auto">
+      <div class="mb-12 flex flex-justify-space-between pl-10 pr-10">
+        <span>
+          <el-button plain size="small" @click="qiChuMyAnswer">期初余额</el-button>
+          <el-button plain size="small" @click="jiZhangRightAnswer">记账凭证</el-button>
+        </span>
+        <span>
+          <el-button v-if="leftShow && rightShow" type="primary" size="small" icon="el-icon-d-arrow-left" circle @click="showRight"></el-button>
+          <el-button v-if="!leftShow && rightShow" type="primary" size="small" icon="el-icon-d-arrow-right" circle @click="leftShow = !leftShow"></el-button>
+        </span>
+      </div>
       <p class="mb-12">正确答案</p>
       <div style="height: calc(100vh - 150px);padding: 10px;min-width: 500px" class="bg-white">
         <div class="title">
@@ -194,7 +214,28 @@ export default {
   },
   data () {
     return {
-      active: 0
+      active: 0,
+      leftShow: true,
+      rightShow: true
+    }
+  },
+  methods: {
+    showLeft () {
+      this.rightShow = false
+      this.leftShow = true
+    },
+    showRight () {
+      this.rightShow = true
+      this.leftShow = false
+    },
+    qiChuMyAnswer () {
+      this.$emit('clickQiChuMyAnswer')
+    },
+    jiZhangMyAnswer () {
+      this.$emit('clickJiZhangMyAnswer')
+    },
+    jiZhangRightAnswer () {
+      this.$emit('clickJiZhangRightAnswer')
     }
   }
 }
