@@ -128,7 +128,7 @@ export default {
           if (this.formData.id) {
             data.id = this.formData.id
           }
-          window.axios.post('/exam/add', data).then(response => {
+          window.axios.post(`${window.adminHost}/admin/manual/business`, data).then(response => {
             let res = response.data
             if (!res.error_code) {
               this.$message.success('保存成功')

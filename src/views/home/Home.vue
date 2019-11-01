@@ -188,17 +188,53 @@ export default {
   },
   methods: {
     initData () {
-      if (this.trade_id) {
-        // 保存企业id跳转使用
-        sessionStorage.setItem('sgz_company_id', this.trade_id)
-        // 取当前企业的基本信息
-        window.axios.post('/company/list', { id: this.trade_id }).then(response => {
+      if (parseInt(this.getCookie('scope')) === 1) {
+        // 老师
+        if (this.trade_id) {
+          // 保存企业id跳转使用
+          sessionStorage.setItem('sgz_company_id', this.trade_id)
+          window.axios.get(`${window.adminHost}/admin/manual/company/${this.trade_id}/`).then(response => {
+            let res = response.data
+            if (!res.error_code) {
+              // 保存企业信息
+              this.$store.commit('SAVE_COMPANY_INFO', res.data)
+              // 处理科目信息
+              let subject = JSON.parse(res.data['subject'])
+              this.subjectData = this.basicKeMu
+              // 合成最终结果
+              if (subject) {
+                this.subjectData.forEach(v => {
+                  let data = this.getTree(subject, v.id)
+                  if (data.length > 0) {
+                    this.$set(v, 'children', data)
+                  }
+                })
+              }
+              this.$store.commit('SAVE_COMPANY_SUBJECT', subject)
+              this.$store.commit('SAVE_KE_MU_INFO', this.deepTraversal(this.subjectData))
+              this.$store.commit('SAVE_ROLE', 'teacher')
+              sessionStorage.setItem('sgz_role', 'teacher')
+              this.getAnswer()
+            } else {
+              this.$message.error('未找到企业信息')
+              // todo 跳转
+            }
+          })
+          // 取当前企业的基本信息
+        } else {
+          this.$message.error('缺少企业标识参数')
+        }
+      }
+      if (parseInt(this.getCookie('scope')) === 3) {
+        // 学生
+        window.axios.get(`${window.studentHost}/stu/manual/company`).then(response => {
           let res = response.data
           if (!res.error_code) {
             // 保存企业信息
-            this.$store.commit('SAVE_COMPANY_INFO', res.data.data[0])
+            this.$store.commit('SAVE_COMPANY_INFO', res.data)
+            sessionStorage.setItem('sgz_company_id', res.data.id)
             // 处理科目信息
-            let subject = JSON.parse(res.data.data[0]['subject'])
+            let subject = JSON.parse(res.data['subject'])
             this.subjectData = this.basicKeMu
             // 合成最终结果
             if (subject) {
@@ -209,36 +245,23 @@ export default {
                 }
               })
             }
-            this.$store.commit('SAVE_COMPANY_SUBJECT', subject)
+            // 角色 学生 开始时间
+            let start = Date.parse(new Date()) / 1000
             this.$store.commit('SAVE_KE_MU_INFO', this.deepTraversal(this.subjectData))
-            // 角色 老师
-            if (this.role === 'teacher') {
-              this.$store.commit('SAVE_ROLE', 'teacher')
-              sessionStorage.setItem('sgz_role', 'teacher')
-              this.getAnswer()
-            } else if (this.role === 'student') {
-              // 角色 学生 开始时间
-              let start = Date.parse(new Date()) / 1000
-              this.$store.commit('SAVE_ROLE', 'student')
-              sessionStorage.setItem('sgz_role', 'student')
-              sessionStorage.setItem('sgz_start_at', start.toString())
-              this.getRecord()
-            }
-          } else {
-            this.$message.error('未找到企业信息')
-            // todo 跳转
+            this.$store.commit('SAVE_ROLE', 'student')
+            sessionStorage.setItem('sgz_role', 'student')
+            sessionStorage.setItem('sgz_start_at', start.toString())
+            this.getRecord(res.data.id)
           }
         })
-      } else {
-        this.$message.error('缺少企业标识参数')
       }
     },
     getAnswer () {
       // 取答案记录
-      window.axios.get(`/company/answer/${this.trade_id}`).then(response => {
+      window.axios.get(`${window.adminHost}/admin/manual/answer/${this.trade_id}`).then(response => {
         let res = response.data
         if (!res.error_code) {
-          if (JSON.stringify(res.data) !== '[null]') {
+          if (res.data.length > 0) {
             // 数组转成对象
             const answer = res.data[0]
             // 现金日记账
@@ -270,9 +293,9 @@ export default {
         console.log(error)
       })
     },
-    getRecord () {
+    getRecord (companyId) {
       // 取用户记录
-      window.axios.get(`http://117.50.43.204:8000/stu/v1/stu/sx/1/record`).then(response => {
+      window.axios.post(`${window.studentHost}/stu/manual/record`, { sx_id: 1, company_id: companyId }).then(response => {
         let res = response.data
         if (res.data) {
           // 数组转成对象
@@ -341,6 +364,15 @@ export default {
     },
     toUrl () {
       this.$router.replace('/main/basic-info')
+    },
+    getCookie (cname) {
+      var name = cname + '='
+      var ca = document.cookie.split(';')
+      for (var i = 0; i < ca.length; i++) {
+        var c = ca[i].trim()
+        if (c.indexOf(name) === 0) return c.substring(name.length, c.length)
+      }
+      return ''
     }
   }
 }

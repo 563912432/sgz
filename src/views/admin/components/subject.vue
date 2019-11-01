@@ -88,7 +88,7 @@ export default {
   },
   methods: {
     initData () {
-      this.subjectData = JSON.parse(sessionStorage.getItem('sgz_info'))['basicKeMu']
+      this.subjectData = this.$store.state['basicKeMu']
       // 合成最终结果
       if (this.data.length > 0) {
         this.subjectData.forEach(v => {
@@ -99,6 +99,8 @@ export default {
         })
       }
       this.resultId = this.subjectData.concat(this.data).length + 1
+      // 还原基本科目
+      this.resetBasicKeMu()
     },
     getTree (treeData, parentId) {
       let treeArr = []
@@ -144,7 +146,6 @@ export default {
               this.$set(this.handleData, 'children', [])
             }
             this.handleData.children.push(newChild)
-            console.log(this.subjectData)
             this.resultId += 1
           }
           // this.$message.success('保存成功')
@@ -160,7 +161,7 @@ export default {
           this.handleChildren(value.children)
         }
       })
-      window.axios.post('/company/add', { id: this.companyId, subject: JSON.stringify(this.resultData) }).then(response => {
+      window.axios.post(`${window.adminHost}/admin/manual/company/add`, { id: this.companyId, subject: JSON.stringify(this.resultData) }).then(response => {
         let res = response.data
         if (!res.error_code) {
           this.$message.success('保存成功')
@@ -192,13 +193,54 @@ export default {
     handleChildren (item) {
       if (item && item.length > 0) {
         item.forEach(value => {
-          console.log(value)
           this.resultData.push({ id: value.id, title: value.title, parent_id: value.parent_id, level: value.level })
           this.handleChildren(value.children)
         })
       } else {
         return false
       }
+    },
+    resetBasicKeMu () {
+      this.$store.commit('SAVE_BASIC_KE_MU', this.returnBasicKeMu())
+    },
+    returnBasicKeMu () {
+      return [
+        { id: 1, title: '库存现金', parent_id: '0', level: '1' },
+        { id: 2, title: '银行存款', parent_id: '0', level: '1' },
+        { id: 3, title: '应收票据', parent_id: '0', level: '1' },
+        { id: 4, title: '应收账款', parent_id: '0', level: '1' },
+        { id: 5, title: '其他应收款', parent_id: '0', level: '1' },
+        { id: 6, title: '原材料', parent_id: '0', level: '1' },
+        { id: 7, title: '库存商品', parent_id: '0', level: '1' },
+        { id: 8, title: '周转材料', parent_id: '0', level: '1' },
+        { id: 9, title: '固定资产', parent_id: '0', level: '1' },
+        { id: 10, title: '累计折旧', parent_id: '0', level: '1' },
+        { id: 11, title: '短期借款', parent_id: '0', level: '1' },
+        { id: 12, title: '应付票据', parent_id: '0', level: '1' },
+        { id: 13, title: '应付账款', parent_id: '0', level: '1' },
+        { id: 14, title: '应付职工薪酬', parent_id: '0', level: '1' },
+        { id: 15, title: '应交税费', parent_id: '0', level: '1' },
+        { id: 16, title: '应付利润', parent_id: '0', level: '1' },
+        { id: 17, title: '其他应付款', parent_id: '0', level: '1' },
+        { id: 18, title: '盈余公积', parent_id: '0', level: '1' },
+        { id: 19, title: '本年利润', parent_id: '0', level: '1' },
+        { id: 20, title: '利润分配', parent_id: '0', level: '1' },
+        { id: 21, title: '生产成本', parent_id: '0', level: '1' },
+        { id: 22, title: '制造费用', parent_id: '0', level: '1' },
+        { id: 23, title: '主营业务收入', parent_id: '0', level: '1' },
+        { id: 24, title: '其他业务收入', parent_id: '0', level: '1' },
+        { id: 25, title: '营业外收入', parent_id: '0', level: '1' },
+        { id: 26, title: '主营业务成本', parent_id: '0', level: '1' },
+        { id: 27, title: '税金及附加', parent_id: '0', level: '1' },
+        { id: 28, title: '销售费用', parent_id: '0', level: '1' },
+        { id: 29, title: '管理费用', parent_id: '0', level: '1' },
+        { id: 30, title: '财务费用', parent_id: '0', level: '1' },
+        { id: 31, title: '所得税费用', parent_id: '0', level: '1' },
+        { id: 32, title: '营业外支出', parent_id: '0', level: '1' },
+        { id: 33, title: '实收资本', parent_id: '0', level: '1' },
+        { id: 34, title: '应付利息', parent_id: '0', level: '1' },
+        { id: 35, title: '其他业务成本', parent_id: '0', level: '1' }
+      ]
     }
   }
 }

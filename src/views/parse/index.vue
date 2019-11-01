@@ -7,7 +7,7 @@
           <div class="title">手工全盘账解析</div>
 <!--          <div class="score-bg"></div>-->
 <!--          <div class="score">总计得分：90分</div>-->
-          <div class="backtrack">返回</div>
+<!--          <div class="backtrack" @click="exit">返回</div>-->
         </div>
       </el-header>
       <split-pane split="vertical" :min-percent='0' :default-percent='0'>
@@ -205,12 +205,12 @@ export default {
     }
   },
   computed: {
-    trade_id () {
-      return this.$route.params.trade_id
-    },
     // 左侧收缩栏类型
     leftPanelType () {
       return this.$store.state.leftPanelType
+    },
+    id () {
+      return this.$route.params.id
     }
   },
   created () {
@@ -226,7 +226,7 @@ export default {
           this.rightMaterialShow = true
           this.isRightActive = true
           // 取第一张凭证的信息
-          this.rightAnswerJiZhang = this.$store.state.answer['pingZheng'][this.index]
+          this.rightAnswerJiZhang = this.$store.state.answer['pingZheng'][this.index] ? this.$store.state.answer['pingZheng'][this.index] : {}
           this.myAnswerJiZhang = this.$store.state.record['pingZheng'][this.index] ? this.$store.state.record['pingZheng'][this.index] : {}
           break
         case 'xian-jin-ri-ji':
@@ -305,16 +305,16 @@ export default {
     initData () {
       // 取业务 取正确答案 取用户答案
       // 取当前企业的基本信息
-      window.axios.post('/company/list', { id: this.trade_id }).then(response => {
+      window.axios.get(`${window.studentHost}/stu/manual/company`).then(response => {
         let res = response.data
         if (!res.error_code) {
           // 保存企业信息
-          this.$store.commit('SAVE_COMPANY_INFO', res.data.data[0])
-          this.companyInfo = res.data.data[0]
+          this.$store.commit('SAVE_COMPANY_INFO', res.data)
+          this.companyInfo = res.data
           // 取正确答案
           this.getAnswer()
           // 取用户答题记录
-          this.getRecord()
+          this.getRecord(this.companyInfo.id)
           // 渲染数据
           this.system = 'ji-zhang'
           this.handleData = this.companyInfo['business']
@@ -336,9 +336,8 @@ export default {
         this.isRightActive = true
         this.handleData = this.$store.state.companyInfo.business
         this.currentData = this.handleData[this.index]
-        this.rightAnswerJiZhang = this.$store.state.answer['pingZheng'][this.index]
+        this.rightAnswerJiZhang = this.$store.state.answer['pingZheng'][this.index] ? this.$store.state.answer['pingZheng'][this.index] : {}
         this.myAnswerJiZhang = this.$store.state.record['pingZheng'][this.index] ? this.$store.state.record['pingZheng'][this.index] : {}
-        console.log(this.myAnswerJiZhang)
       }
       if (system === 'xian-jin-ri-ji') {
         this.rightMaterialShow = false
@@ -522,12 +521,12 @@ export default {
     },
     getAnswer () {
       // 取正确答案记录
-      window.axios.get(`/company/answer/${this.trade_id}`).then(response => {
+      window.axios.get(`${window.studentHost}/stu/manual/${this.id}/parse`).then(response => {
         let res = response.data
         if (!res.error_code) {
-          if (JSON.stringify(res.data) !== '[null]') {
+          if (res.data.length > 0) {
             // 数组转成对象
-            const answer = res.data[0]
+            const answer = res.data.data[0]
             // 现金日记账
             if (answer['riJiZhang'][0] && answer['riJiZhang'][0]['answer'] && Array.isArray(answer['riJiZhang'][0]['answer'])) {
               answer['riJiZhang'][0]['answer'] = this.arrayToObj(answer['riJiZhang'][0]['answer'])
@@ -553,45 +552,52 @@ export default {
             this.rightAnswerJiZhang = this.$store.state.answer['pingZheng'][this.index]
           }
         } else {
-          this.$message.error('请求失败')
+          this.$message.error('尚未操作，请先操作之后，再查看解析')
+          setTimeout(() => {
+            this.$router.push('/home/student')
+          }, 1000)
         }
       }).catch((error) => {
         console.log(error)
       })
     },
-    getRecord () {
+    getRecord (companyId) {
       // 取用户记录
-      window.axios.get(`http://117.50.43.204:8000/stu/v1/stu/sx/1/record`).then(response => {
+      window.axios.post(`${window.studentHost}/stu/manual/record`, { sx_id: 1, company_id: companyId }).then(response => {
         let res = response.data
-        if (res.data) {
-          // 数组转成对象
-          const answer = JSON.parse(res.data)
-          // 记账凭证
-          if (answer['pingzheng'] && Array.isArray(answer['pingzheng'])) {
-            answer['pingzheng'] = this.arrayToObj(answer['pingzheng'])
+        if (!res.error_code) {
+          if (res.data) {
+            // 数组转成对象
+            const answer = JSON.parse(res.data)
+            // 记账凭证
+            if (answer['pingzheng'] && Array.isArray(answer['pingzheng'])) {
+              answer['pingzheng'] = this.arrayToObj(answer['pingzheng'])
+            }
+            // 现金日记账
+            if (answer['riJiZhang'][0] && answer['riJiZhang'][0]['answer'] && Array.isArray(answer['riJiZhang'][0]['answer'])) {
+              answer['riJiZhang'][0]['answer'] = this.arrayToObj(answer['riJiZhang'][0]['answer'])
+            }
+            // 增值税明细账
+            if (answer['minXiZhang'][1] && answer['minXiZhang'][1]['answer'] && Array.isArray(answer['minXiZhang'][1]['answer'])) {
+              answer['minXiZhang'][1]['answer'] = this.arrayToObj(answer['minXiZhang'][1]['answer'])
+            }
+            // 科目汇总表
+            if (Array.isArray(answer['keMuHuiZong'])) {
+              answer['keMuHuiZong'] = this.arrayToObj(answer['keMuHuiZong'])
+            }
+            // 资产负债表
+            if (Array.isArray(answer['ziChanFuZhaiBiao'])) {
+              answer['ziChanFuZhaiBiao'] = this.arrayToObj(answer['ziChanFuZhaiBiao'])
+            }
+            // 利润表
+            if (Array.isArray(answer['liRunBiao'])) {
+              answer['liRunBiao'] = this.arrayToObj(answer['liRunBiao'])
+            }
+            this.$store.commit('SAVE_RECORD', answer)
+            this.myAnswerJiZhang = this.$store.state.record['pingZheng'][this.index] ? this.$store.state.record['pingZheng'][this.index] : {}
           }
-          // 现金日记账
-          if (answer['riJiZhang'][0] && answer['riJiZhang'][0]['answer'] && Array.isArray(answer['riJiZhang'][0]['answer'])) {
-            answer['riJiZhang'][0]['answer'] = this.arrayToObj(answer['riJiZhang'][0]['answer'])
-          }
-          // 增值税明细账
-          if (answer['minXiZhang'][1] && answer['minXiZhang'][1]['answer'] && Array.isArray(answer['minXiZhang'][1]['answer'])) {
-            answer['minXiZhang'][1]['answer'] = this.arrayToObj(answer['minXiZhang'][1]['answer'])
-          }
-          // 科目汇总表
-          if (Array.isArray(answer['keMuHuiZong'])) {
-            answer['keMuHuiZong'] = this.arrayToObj(answer['keMuHuiZong'])
-          }
-          // 资产负债表
-          if (Array.isArray(answer['ziChanFuZhaiBiao'])) {
-            answer['ziChanFuZhaiBiao'] = this.arrayToObj(answer['ziChanFuZhaiBiao'])
-          }
-          // 利润表
-          if (Array.isArray(answer['liRunBiao'])) {
-            answer['liRunBiao'] = this.arrayToObj(answer['liRunBiao'])
-          }
-          this.$store.commit('SAVE_RECORD', answer)
-          this.myAnswerJiZhang = this.$store.state.record['pingZheng'][this.index] ? this.$store.state.record['pingZheng'][this.index] : {}
+        } else {
+          this.$message.error('操作失败')
         }
       }).catch((error) => {
         console.log(error)
@@ -630,6 +636,8 @@ export default {
       }
       this.defaultMenu = this.defaultMenu.substring(0, 2) + (parseInt(this.defaultMenu.substring(2, this.defaultMenu.length)) + 1)
       this.index++
+    },
+    exit () {
     }
   }
 }

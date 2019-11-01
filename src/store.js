@@ -161,6 +161,9 @@ export default new Vuex.Store({
     }
   },
   mutations: {
+    SAVE_BASIC_KE_MU (state, data) {
+      state.basicKeMu = data
+    },
     SAVE_ROLE (state, data) {
       state.role = data
     },

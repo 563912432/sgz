@@ -42,7 +42,7 @@
               <el-button type="text" size="mini" @click="editBusiness(row, companyData[0]['id'])">
                 编辑
               </el-button>
-              <el-button type="text" size="mini">
+              <el-button type="text" size="mini" @click="delBusiness(row, companyData[0]['id'])">
                 删除
               </el-button>
             </template>
@@ -181,7 +181,7 @@ export default {
   methods: {
     initData: function () {
       // 取全部企业列表
-      window.axios.post(`/company/list?page=${this.pageQuery.page}&&page_size=${this.pageQuery.page_size}`).then(response => {
+      window.axios.post(`${window.adminHost}/admin/manual/company/list?page=${this.pageQuery.page}&&page_size=${this.pageQuery.page_size}`).then(response => {
         let res = response.data
         if (!res.error_code) {
           // 请求成功
@@ -244,14 +244,14 @@ export default {
         cancelButtonText: '取消',
         type: 'warning'
       }).then(() => {
-        window.axios.post('/company/del', { id: id }).then(response => {
+        window.axios.delete(`${window.adminHost}/admin/manual/company/del/${id}`).then(response => {
           let res = response.data
           if (!res.error_code) {
             this.$message.success('删除成功')
             this.pageQuery.page = this.pageQuery.page - 1
             this.initData()
           } else {
-            this.$message.error('保存失败')
+            this.$message.error('删除失败')
           }
         }).catch((error) => {
           console.log(error)
@@ -270,7 +270,7 @@ export default {
       // 保存企业
       this.$refs[formName].validate((valid) => {
         if (valid) {
-          window.axios.post('/company/add', this.companyFormData).then(response => {
+          window.axios.post(`${window.adminHost}/admin/manual/company/add`, this.companyFormData).then(response => {
             let res = response.data
             if (!res.error_code) {
               this.$message.success('保存成功')
@@ -297,14 +297,36 @@ export default {
       this.businessData = row
       this.dialogBusinessVisible = true
     },
+    // 删除业务 delBusiness
+    delBusiness (row, companyId) {
+      this.$confirm('确定要删除吗?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        window.axios.delete(`${window.adminHost}/admin/manual/business/${row.id}`).then(response => {
+          let res = response.data
+          if (!res.error_code) {
+            this.$message.success('删除成功')
+            this.initData()
+          } else {
+            this.$message.error('删除失败')
+          }
+        }).catch((error) => {
+          console.log(error)
+        })
+      }).catch(() => {
+        console.log('cancel')
+      })
+    },
     saveBusiness () {
       this.dialogBusinessVisible = false
       this.initData()
     },
-    // 保存答案
+    // 保存答案 todo
     toSaveAnswer (id) {
-      // window.open(`/shou_gong_zhang/#/home/${id}/teacher`)
-      this.$router.push('/home/' + id + '/teacher')
+      window.open(`/shou_gong_zhang/#/home/${id}/teacher`)
+      // this.$router.push('/home/' + id + '/teacher')
     },
     handleSubjectDrag () {
       this.$refs['subjectDiv'].blur()

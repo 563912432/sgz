@@ -19,11 +19,13 @@ Vue.use(VueQuillEditor)
 Vue.config.productionTip = false
 
 window.axios = axios
-axios.defaults.baseURL = 'http://117.50.43.204:8000/manual/v1'
+window.adminHost = 'http://117.50.43.204:8000/admin/v1'
+window.studentHost = 'http://117.50.43.204:8000/stu/v1'
 // 请求拦截器
 axios.interceptors.request.use(config => {
-  // document.cookie = 'Admin-Access-Token=2c6da4a5d045792201336fe8b4e63d49'
-  // document.cookie = 'Student-Access-Token=0b13b570182e4d0b62983c64736df7a1'
+  // document.cookie = 'Admin-Access-Token=283641eb542ec23cefbb0c35a33be812'
+  // document.cookie = 'Student-Access-Token=113e451aee530a6a901f77ae8260c479'
+  // document.cookie = 'scope=3'
   function getCookie (cname) {
     var name = cname + '='
     var ca = document.cookie.split(';')
@@ -35,9 +37,10 @@ axios.interceptors.request.use(config => {
   }
   let adminToken = getCookie('Admin-Access-Token')
   let studentToken = getCookie('Student-Access-Token')
+  let scope = getCookie('scope')
   config.headers = {
     'Content-Type': 'application/x-www-form-urlencoded',
-    'Authorization': adminToken || studentToken
+    'Authorization': parseInt(scope) === 1 ? adminToken : studentToken
   }
   // 在发送请求之前做些什么
   config.data = qs.stringify(config.data) // 转为formdata数据格式

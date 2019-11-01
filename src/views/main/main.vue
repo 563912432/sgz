@@ -302,7 +302,7 @@ export default {
               if (sessionStorage.getItem('role') === 'teacher') {
                 this.$router.push(`/home/${sessionStorage.getItem('sgz_company_id')}/teacher`)
               } else {
-                this.$router.push(`/home/${sessionStorage.getItem('sgz_company_id')}/student`)
+                this.$router.push(`/home/student`)
               }
             }, 1000)
           }
@@ -738,10 +738,10 @@ export default {
         this.loading = true
         let companyId = this.$store.state.companyInfo['id'] || sessionStorage.getItem('sgz_company_id')
         let role = sessionStorage.getItem('sgz_role') || this.$store.state.role
-        if (companyId) {
-          if (role) {
-            if (role === 'teacher') {
-              window.axios.post('/company/answer', { id: companyId, answer: JSON.stringify(this.$store.state.answer) }).then(response => {
+        if (role) {
+          if (role === 'teacher') {
+            if (companyId) {
+              window.axios.post(`${window.adminHost}/admin/manual/answer`, { id: companyId, answer: JSON.stringify(this.$store.state.answer) }).then(response => {
                 let res = response.data
                 if (!res.error_code) {
                   this.$message.success('答案保存成功')
@@ -749,34 +749,26 @@ export default {
                   this.$router.push(`/home/${companyId}/${role}`)
                 }
               }).catch()
-            } else if (role === 'student') {
-              window.axios.post('/submit', { id: companyId, start_at: sessionStorage.getItem('sgz_start_at'), answer: JSON.stringify(this.$store.state.answer) }).then(response => {
-                if (!response.error_code) {
-                  this.$message.success('交卷成功')
-                  this.loading = false
-                  this.resultData = response.data.data
-                  this.resultData['start_at'] = this.timeStampToSting(sessionStorage.getItem('sgz_start_at'))
-                  setTimeout(() => {
-                    this.submitDialogVisible = true
-                  }, 1000)
-                }
-              })
+            } else {
+              // 尚未选择企业
+              this.$message.error('尚未选择企业')
             }
-          } else {
-            this.$message.error('缺少角色')
+          } else if (role === 'student') {
+            window.axios.post(`${window.studentHost}/stu/manual/submit`, { id: companyId, start_at: sessionStorage.getItem('sgz_start_at'), answer: JSON.stringify(this.$store.state.answer), source: 1 }).then(response => {
+              if (!response.error_code) {
+                this.$message.success('交卷成功')
+                this.loading = false
+                this.resultData = response.data.data
+                this.resultData['start_at'] = this.timeStampToSting(sessionStorage.getItem('sgz_start_at'))
+                setTimeout(() => {
+                  this.submitDialogVisible = true
+                }, 1000)
+              }
+            })
           }
         } else {
-          // 尚未选择企业
-          this.$message.error('尚未选择企业')
-          if (role === 'teacher') {
-          } else if (role === 'student') {
-          } else {}
+          this.$message.error('缺少角色')
         }
-        // console.log(JSON.stringify(this.$store.state.answer))
-        // setTimeout(() => {
-        //   this.loading = false
-        //   this.submitDialogVisible = true
-        // }, 1500)
       }).catch(() => {
         console.log('取消交卷')
       })
@@ -787,7 +779,11 @@ export default {
       let role = sessionStorage.getItem('sgz_role') || this.$store.state.role
       if (companyId) {
         if (role) {
-          this.$router.push(`/home/${companyId}/${role}`)
+          if (role === 'teacher') {
+            this.$router.push(`/home/${companyId}/${role}`)
+          } else {
+            this.$router.push(`/home/${role}`)
+          }
         } else {
           this.$message.error('缺少角色')
         }
