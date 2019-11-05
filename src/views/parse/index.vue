@@ -568,7 +568,7 @@ export default {
         if (!res.error_code) {
           if (res.data) {
             // 数组转成对象
-            const answer = JSON.parse(res.data)
+            const answer = res.data
             // 记账凭证
             if (answer['pingzheng'] && Array.isArray(answer['pingzheng'])) {
               answer['pingzheng'] = this.arrayToObj(answer['pingzheng'])
