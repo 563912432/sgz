@@ -5,19 +5,19 @@
       <div class="content-left flex flex-column">
         <div class="left-card flex-1 pt-20 pl-40 pr-40">
           <div class="title mb-20">01 基础资料</div>
-          <div class="wrap">&nbsp;&nbsp;&nbsp;&nbsp;本模块包括“了解企业信息”和“期初余额”两部分。通过“了解企业信息”模块，能够了解到企业的基本情况， 这项工作是我们进入企业后首先需要做的事项。“期初余额”是该企业截至11月底的财务基础数据。</div>
+          <div class="wrap">&nbsp;&nbsp;&nbsp;&nbsp;本模块包括“了解企业信息”和“期初余额”两部分。通过“了解企业信息”模块，能够了解到企业的基本情况。“期初余额”是该企业截至11月底的财务基础数据。</div>
         </div>
         <div class="left-card flex-1 pt-20 pl-40 pr-40">
           <div class="title mb-20">02 填制凭证</div>
-          <div class="wrap">包括“原始凭证”和“记账凭证”。这个模块是整个课程中的核心模块，也是学员必须要全面、细致进行操作的模块。 学员在本模块中可以见到与实际工作中真实单据样式完全相同的电子彩色原始凭证。</div>
+          <div class="wrap">包括“原始凭证”和“记账凭证”。这个模块是整个课程中的核心模块。 学员在本模块中可以见到与实际工作中真实单据样式完全相同的电子彩色原始凭证。</div>
         </div>
         <div class="left-card flex-1 pt-20 pl-40 pr-40">
           <div class="title mb-20">03 登记账簿</div>
-          <div class="wrap">主要是根据前面填制的凭证进行登账操作。包括明细账、日记账、总账登记，同时根据科目汇总表账务处理程序下的会计操作流程， 设置了T型账的登记以及科目汇总表的编制，依据编制的科目汇总表来登记总账。</div>
+          <div class="wrap">主要是根据前面填制的凭证进行登账操作。包括明细账、日记账、总账登记， 设置了T型账的登记以及科目汇总表的编制，依据编制的科目汇总表来登记总账。</div>
         </div>
         <div class="left-card flex-1 pt-20 pl-40 pr-40">
           <div class="title mb-20">04 编制报表</div>
-          <div class="wrap">这项操作设置了资产负债表和利润表的编制操作，需要学员根据前面所有操作自行编制会计报表，编制完成之后点击“保存”来保存数据</div>
+          <div class="wrap">这项操作设置了资产负债表和利润表的编制操作，需要学员根据前面所有操作自行编制会计报表</div>
         </div>
       </div>
       <div class="content-right ml-20 flex-1 flex">

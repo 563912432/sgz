@@ -325,8 +325,8 @@ export default {
     },
     // 保存答案 todo
     toSaveAnswer (id) {
-      // window.open(`/shou_gong_zhang/#/home/${id}`)
-      this.$router.push('/home/' + id)
+      window.open(`/shou_gong_zhang/#/home/${id}`)
+      // this.$router.push('/home/' + id)
     },
     handleSubjectDrag () {
       this.$refs['subjectDiv'].blur()
