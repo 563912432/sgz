@@ -163,6 +163,7 @@
 </template>
 
 <script>
+import { getCookie } from '../../utils/index'
 import Header from './components/Header'
 export default {
   name: 'Home',
@@ -172,7 +173,7 @@ export default {
       return this.$route.params.role
     },
     trade_id () {
-      return this.$route.params.trade_id
+      return this.$route.params.company_id
     },
     basicKeMu () {
       return this.$store.state.basicKeMu
@@ -188,12 +189,12 @@ export default {
   },
   methods: {
     initData () {
-      if (parseInt(this.getCookie('scope')) === 1) {
+      if (parseInt(getCookie('scope')) === 1) {
         // 老师
         if (this.trade_id) {
           // 保存企业id跳转使用
           sessionStorage.setItem('sgz_company_id', this.trade_id)
-          window.axios.get(`${window.adminHost}/admin/manual/company/${this.trade_id}/`).then(response => {
+          window.axios.get(`${window.adminHost}/admin/manual/company/${this.trade_id}`).then(response => {
             let res = response.data
             if (!res.error_code) {
               // 保存企业信息
@@ -212,8 +213,6 @@ export default {
               }
               this.$store.commit('SAVE_COMPANY_SUBJECT', subject)
               this.$store.commit('SAVE_KE_MU_INFO', this.deepTraversal(this.subjectData))
-              this.$store.commit('SAVE_ROLE', 'teacher')
-              sessionStorage.setItem('sgz_role', 'teacher')
               this.getAnswer()
             } else {
               this.$message.error('未找到企业信息')
@@ -225,9 +224,10 @@ export default {
           this.$message.error('缺少企业标识参数')
         }
       }
-      if (parseInt(this.getCookie('scope')) === 3) {
+      if (parseInt(getCookie('scope')) === 3) {
         // 学生
         window.axios.get(`${window.studentHost}/stu/manual/company`).then(response => {
+          console.log(response)
           let res = response.data
           if (!res.error_code) {
             // 保存企业信息
@@ -248,8 +248,6 @@ export default {
             // 角色 学生 开始时间
             let start = Date.parse(new Date()) / 1000
             this.$store.commit('SAVE_KE_MU_INFO', this.deepTraversal(this.subjectData))
-            this.$store.commit('SAVE_ROLE', 'student')
-            sessionStorage.setItem('sgz_role', 'student')
             sessionStorage.setItem('sgz_start_at', start.toString())
             this.getRecord(res.data.id)
           }

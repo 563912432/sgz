@@ -13,6 +13,7 @@ import 'quill/dist/quill.snow.css'
 import 'quill/dist/quill.bubble.css'
 import axios from 'axios'
 import qs from 'qs'
+import { getCookie, setCookie } from './utils'
 
 Vue.use(ElementUI)
 Vue.use(VueQuillEditor)
@@ -21,26 +22,35 @@ Vue.config.productionTip = false
 window.axios = axios
 window.adminHost = 'http://117.50.43.204:8000/admin/v1'
 window.studentHost = 'http://117.50.43.204:8000/stu/v1'
+
+// let scope = setCookie('scope', 3)
+// setCookie('YPJ-ACCESS-TOKEN', '2276830613b8f48ae927f782c9cf3abc')
+// let scope = getCookie('scope')
+let whiteList = ['404'] // 白名单
+
+let scope = getCookie('scope')
+router.beforeEach((to, from, next) => {
+  if (whiteList.indexOf(to.name) === -1) {
+    // 获取scope
+    if (typeof scope === 'undefined' || !scope) {
+      next({ name: '404' })
+    } else if (parseInt(scope) === 1 || parseInt(scope) === 2) { // teacher 模式
+      store.state.role = 'teacher'
+    } else if (parseInt(scope) === 3) {
+      store.state.role = 'student' // 学生模式
+    } else {
+      next({ name: '404' })
+    }
+  }
+  next()
+})
 // 请求拦截器
 axios.interceptors.request.use(config => {
-  // document.cookie = 'Admin-Access-Token=283641eb542ec23cefbb0c35a33be812'
-  // document.cookie = 'Student-Access-Token=113e451aee530a6a901f77ae8260c479'
-  // document.cookie = 'scope=3'
-  function getCookie (cname) {
-    var name = cname + '='
-    var ca = document.cookie.split(';')
-    for (var i = 0; i < ca.length; i++) {
-      var c = ca[i].trim()
-      if (c.indexOf(name) === 0) return c.substring(name.length, c.length)
-    }
-    return ''
-  }
-  let adminToken = getCookie('Admin-Access-Token')
-  let studentToken = getCookie('Student-Access-Token')
-  let scope = getCookie('scope')
+  let token = getCookie('YPJ-ACCESS-TOKEN')
+  // let scope = getCookie('scope')
   config.headers = {
     'Content-Type': 'application/x-www-form-urlencoded',
-    'Authorization': parseInt(scope) === 1 ? adminToken : studentToken
+    'Authorization': token
   }
   // 在发送请求之前做些什么
   config.data = qs.stringify(config.data) // 转为formdata数据格式

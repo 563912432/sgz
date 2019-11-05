@@ -210,7 +210,7 @@ export default {
       return this.$store.state.leftPanelType
     },
     id () {
-      return this.$route.params.id
+      return this.$route.params.company_id
     }
   },
   created () {
@@ -554,7 +554,7 @@ export default {
         } else {
           this.$message.error('尚未操作，请先操作之后，再查看解析')
           setTimeout(() => {
-            this.$router.push('/home/student')
+            this.$router.push('/home')
           }, 1000)
         }
       }).catch((error) => {

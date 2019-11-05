@@ -737,7 +737,7 @@ export default {
       }).then(() => {
         this.loading = true
         let companyId = this.$store.state.companyInfo['id'] || sessionStorage.getItem('sgz_company_id')
-        let role = sessionStorage.getItem('sgz_role') || this.$store.state.role
+        let role = this.$store.state.role
         if (role) {
           if (role === 'teacher') {
             if (companyId) {
@@ -746,7 +746,7 @@ export default {
                 if (!res.error_code) {
                   this.$message.success('答案保存成功')
                   this.loading = false
-                  this.$router.push(`/home/${companyId}/${role}`)
+                  this.$router.push(`/home/${companyId}`)
                 }
               }).catch()
             } else {
@@ -776,13 +776,13 @@ export default {
     // 返回
     handleBack () {
       let companyId = this.$store.state.companyInfo['id'] || sessionStorage.getItem('sgz_company_id')
-      let role = sessionStorage.getItem('sgz_role') || this.$store.state.role
+      let role = this.$store.state.role
       if (companyId) {
         if (role) {
           if (role === 'teacher') {
-            this.$router.push(`/home/${companyId}/${role}`)
+            this.$router.push(`/home/${companyId}`)
           } else {
-            this.$router.push(`/home/${role}`)
+            this.$router.push(`/home`)
           }
         } else {
           this.$message.error('缺少角色')

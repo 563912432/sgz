@@ -11,9 +11,10 @@ export default new Router({
       redirect: '/home'
     },
     {
-      path: '/home/:trade_id?/:role',
+      path: '/home/:company_id?',
       name: 'Home',
-      component: resolve => require(['@/views/home/Home.vue'], resolve)
+      component: () => import('@/views/home/Home')
+      // component: resolve => require(['@/views/home/Home.vue'], resolve)
     },
     {
       path: '/main/:type',
@@ -26,7 +27,7 @@ export default new Router({
       component: () => import('@/views/admin/index')
     },
     {
-      path: '/parse/:id',
+      path: '/parse/:company_id',
       name: 'Parse',
       component: () => import('@/views/parse/index')
     },
