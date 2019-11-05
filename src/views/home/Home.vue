@@ -5,7 +5,7 @@
       <div class="content-left flex flex-column">
         <div class="left-card flex-1 pt-20 pl-40 pr-40">
           <div class="title mb-20">01 基础资料</div>
-          <div class="wrap">&nbsp;&nbsp;&nbsp;&nbsp;本模块包括“了解企业信息”和“期初余额”两部分。通过“了解企业信息”模块，能够了解到企业的基本情况。“期初余额”是该企业截至11月底的财务基础数据。</div>
+          <div class="wrap">&nbsp;&nbsp;&nbsp;&nbsp;本模块包括“了解企业信息”和“期初余额”两部分。通过“了解企业信息”模块，能够了解到企业的基本情况。“期初余额”是该企业财务基础数据。</div>
         </div>
         <div class="left-card flex-1 pt-20 pl-40 pr-40">
           <div class="title mb-20">02 填制凭证</div>
