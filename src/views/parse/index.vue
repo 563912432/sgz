@@ -552,7 +552,7 @@ export default {
             this.rightAnswerJiZhang = this.$store.state.answer['pingZheng'][this.index]
           }
         } else {
-          this.$message.error('尚未操作，请先操作之后，再查看解析')
+          this.$message.error('未获取到正确答案')
           setTimeout(() => {
             this.$router.push('/home')
           }, 1000)
