@@ -524,7 +524,7 @@ export default {
       window.axios.get(`${window.studentHost}/stu/manual/${this.id}/parse`).then(response => {
         let res = response.data
         if (!res.error_code) {
-          if (res.data.length > 0) {
+          if (res.data.data.length > 0) {
             // 数组转成对象
             const answer = res.data.data[0]
             // 现金日记账

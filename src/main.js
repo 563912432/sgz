@@ -13,7 +13,8 @@ import 'quill/dist/quill.snow.css'
 import 'quill/dist/quill.bubble.css'
 import axios from 'axios'
 import qs from 'qs'
-import { getCookie, setCookie } from './utils'
+import { getCookie } from './utils'
+// import { setCookie  } from './utils'
 
 Vue.use(ElementUI)
 Vue.use(VueQuillEditor)

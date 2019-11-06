@@ -227,7 +227,6 @@ export default {
       if (parseInt(getCookie('scope')) === 3) {
         // 学生
         window.axios.get(`${window.studentHost}/stu/manual/company`).then(response => {
-          console.log(response)
           let res = response.data
           if (!res.error_code) {
             // 保存企业信息
@@ -249,7 +248,7 @@ export default {
             let start = Date.parse(new Date()) / 1000
             this.$store.commit('SAVE_KE_MU_INFO', this.deepTraversal(this.subjectData))
             sessionStorage.setItem('sgz_start_at', start.toString())
-            this.getRecord(res.data.id)
+            // this.getRecord(res.data.id)
           }
         })
       }
@@ -295,30 +294,32 @@ export default {
       // 取用户记录
       window.axios.post(`${window.studentHost}/stu/manual/record`, { sx_id: 1, company_id: companyId }).then(response => {
         let res = response.data
-        if (res.data) {
-          // 数组转成对象
-          const answer = JSON.parse(res.data)
-          // 现金日记账
-          if (answer['riJiZhang'][0] && answer['riJiZhang'][0]['answer'] && Array.isArray(answer['riJiZhang'][0]['answer'])) {
-            answer['riJiZhang'][0]['answer'] = this.arrayToObj(answer['riJiZhang'][0]['answer'])
+        if (!res.error_code) {
+          if (res.data) {
+            // 数组转成对象
+            const answer = res.data
+            // 现金日记账
+            if (answer['riJiZhang'][0] && answer['riJiZhang'][0]['answer'] && Array.isArray(answer['riJiZhang'][0]['answer'])) {
+              answer['riJiZhang'][0]['answer'] = this.arrayToObj(answer['riJiZhang'][0]['answer'])
+            }
+            // 增值税明细账
+            if (answer['minXiZhang'][1] && answer['minXiZhang'][1]['answer'] && Array.isArray(answer['minXiZhang'][1]['answer'])) {
+              answer['minXiZhang'][1]['answer'] = this.arrayToObj(answer['minXiZhang'][1]['answer'])
+            }
+            // 科目汇总表
+            if (Array.isArray(answer['keMuHuiZong'])) {
+              answer['keMuHuiZong'] = this.arrayToObj(answer['keMuHuiZong'])
+            }
+            // 资产负债表
+            if (Array.isArray(answer['ziChanFuZhaiBiao'])) {
+              answer['ziChanFuZhaiBiao'] = this.arrayToObj(answer['ziChanFuZhaiBiao'])
+            }
+            // 利润表
+            if (Array.isArray(answer['liRunBiao'])) {
+              answer['liRunBiao'] = this.arrayToObj(answer['liRunBiao'])
+            }
+            this.$store.commit('SAVE_ANSWER', answer)
           }
-          // 增值税明细账
-          if (answer['minXiZhang'][1] && answer['minXiZhang'][1]['answer'] && Array.isArray(answer['minXiZhang'][1]['answer'])) {
-            answer['minXiZhang'][1]['answer'] = this.arrayToObj(answer['minXiZhang'][1]['answer'])
-          }
-          // 科目汇总表
-          if (Array.isArray(answer['keMuHuiZong'])) {
-            answer['keMuHuiZong'] = this.arrayToObj(answer['keMuHuiZong'])
-          }
-          // 资产负债表
-          if (Array.isArray(answer['ziChanFuZhaiBiao'])) {
-            answer['ziChanFuZhaiBiao'] = this.arrayToObj(answer['ziChanFuZhaiBiao'])
-          }
-          // 利润表
-          if (Array.isArray(answer['liRunBiao'])) {
-            answer['liRunBiao'] = this.arrayToObj(answer['liRunBiao'])
-          }
-          this.$store.commit('SAVE_ANSWER', answer)
         }
       }).catch((error) => {
         console.log(error)
